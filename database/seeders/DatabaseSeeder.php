@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
 use App\Models\SettingTahun;
+use App\Models\Shift;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
 
@@ -49,6 +50,30 @@ class DatabaseSeeder extends Seeder
             'pendidikan' => 'S1',
             'agama' => 'Islam',
             'telepon' => '081234567890'
+        ]);
+
+        Shift::create([
+            'id_tahun' => '1',
+            'kode_shift' => "P-001",
+            'nama_shift' => "Pagi",
+            'jam_masuk' => "08:00",
+            'jam_keluar' => "12:00",
+        ]);
+
+        Shift::create([
+            'id_tahun' => '1',
+            'kode_shift' => "S-001",
+            'nama_shift' => "Siang",
+            'jam_masuk' => "13:00",
+            'jam_keluar' => "17:00",
+        ]);
+
+        Shift::create([
+            'id_tahun' => '1',
+            'kode_shift' => "M-001",
+            'nama_shift' => "Malam",
+            'jam_masuk' => "18:00",
+            'jam_keluar' => "22:00",
         ]);
     }
 }

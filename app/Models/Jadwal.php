@@ -5,19 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SettingTahun extends Model
+class Jadwal extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function jadwal()
+    public function karyawan()
     {
-        return $this->hasMany(Jadwal::class);
+        return $this->belongsTo(Karyawan::class);
     }
 
-    public function shift()
+    public function tahun()
     {
-        return $this->hasMany(Shift::class);
+        return $this->belongsTo(SettingTahun::class);
     }
 }

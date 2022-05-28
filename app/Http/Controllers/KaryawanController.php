@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class KaryawanController extends Controller
@@ -47,7 +49,35 @@ class KaryawanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required',
+            'nik' => 'required|numeric',
+            'id_jabatan' => 'required',
+            'id_unit' => 'required',
+            'tanggal_lahir' => 'required',
+            'status_kawin' => 'required',
+            'alamat' => 'required',
+            'gender' => 'required',
+            'pendidikan' => 'required',
+            'telepon' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $karyawan = Karyawan::create($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $karyawan
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -94,7 +124,36 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $karyawan = Karyawan::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'nama' => 'required',
+            'nik' => 'required|numeric',
+            'id_jabatan' => 'required',
+            'id_unit' => 'required',
+            'tanggal_lahir' => 'required',
+            'status_kawin' => 'required',
+            'alamat' => 'required',
+            'gender' => 'required',
+            'pendidikan' => 'required',
+            'telepon' => 'required|numeric'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $karyawan->update($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $karyawan
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

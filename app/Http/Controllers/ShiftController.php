@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shift;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class ShiftController extends Controller
@@ -44,7 +46,29 @@ class ShiftController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'kode_shift' => 'required',
+            'nama_shift' => 'required',
+            'jam_masuk' => 'required',
+            'jam_keluar' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $shift = Shift::create($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $shift
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -78,7 +102,30 @@ class ShiftController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $shift = Shift::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'kode_shift' => 'required',
+            'nama_shift' => 'required',
+            'jam_masuk' => 'required',
+            'jam_keluar' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $shift->update($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $shift
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

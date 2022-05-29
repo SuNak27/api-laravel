@@ -10,7 +10,6 @@ class Jadwal extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
-    protected $with = ['karyawans', 'tahun'];
 
     public function karyawans()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailJadwal;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class JadwalController extends Controller
@@ -16,16 +17,24 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        // $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-        //     ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-        //     ->join('units', 'karyawans.id_unit', '=', 'units.id')
-        //     ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
-        //     ->leftJoin('detail_jadwals', 'jadwals.id', '=', 'detail_jadwals.id_jadwal')
-        //     ->leftJoin('shifts', 'detail_jadwals.id_shift', '=', 'shifts.id')
-        //     ->select('jadwals.tanggal', 'karyawans.nama as nama_karyawan', 'detail_jadwals.*', 'shifts.*', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')
-        //     ->get();
+        $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
+            ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
+            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+            ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
+            ->select('jadwals.tanggal', 'jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')
+            ->get();
 
-        $jadwal = Jadwal::all();
+
+        $result = [];
+        foreach ($jadwal as $j) {
+
+            $j["detail"] = DB::table('detail_jadwals')->leftJoin("shifts", "detail_jadwals.id_shift", "=", "shifts.id")->select("shifts.id", "shifts.nama_shift", "shifts.jam_masuk", "shifts.jam_keluar")->where("id_jadwal", $j['id'])->get();
+
+            array_push($result, $j);
+        }
+
+        // $jadwal = Jadwal::all();
+
 
 
         $response = [

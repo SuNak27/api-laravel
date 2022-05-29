@@ -1,0 +1,35 @@
+// Karyawan
+https://api-graha.belanj.id/public/api/karyawan --------> GET
+https://api-graha.belanj.id/public/api/karyawan --------> POST
+https://api-graha.belanj.id/public/api/karyawan/{:id} ------> GET
+https://api-graha.belanj.id/public/api/karyawan/{:id} ------> PUT
+{
+	 'nama' 	=> 'required',
+         'nik' 		=> 'required|numeric',
+         'id_jabatan' 	=> 'required',
+         'id_unit' 	=> 'required',
+         'tanggal_lahir'=> 'required',
+         'status_kawin' => 'required',
+         'alamat' 	=> 'required',
+         'gender' 	=> 'required',
+         'pendidikan' 	=> 'required',
+         'telepon' 	=> 'required|numeric'
+}
+
+// Jadwal
+https://api-graha.belanj.id/public/api/jadwal ------------------> GET
+https://api-graha.belanj.id/public/api/jadwal/{:id_karyawan} --------> GET
+
+// Aturan Presensi
+https://api-graha.belanj.id/public/api/aturan-presensi --------> GET
+
+// Presensi
+https://api-graha.belanj.id/public/api/presensi --------> GET
+https://api-graha.belanj.id/public/api/presensi --------> POST
+https://api-graha.belanj.id/public/api/presensi/{:id_presensi} --------> PUT
+{
+	'id_karyawan'	 => 'required',
+	'tanggal'	 => 'required',
+	'jam_masuk'	 => 'required',
+	'status' 	 => 'required',
+}

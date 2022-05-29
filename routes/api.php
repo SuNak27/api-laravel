@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +25,6 @@ Route::get('/admin', [AdminController::class, 'index']);
 
 // Karyawan
 Route::resource('/karyawan', KaryawanController::class);
+
+// Jadwal
+Route::resource('/jadwal', JadwalController::class);

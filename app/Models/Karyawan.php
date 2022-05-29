@@ -11,6 +11,7 @@ class Karyawan extends Model
 
     protected $guarded = ['id'];
 
+
     public function jabatan()
     {
         return $this->belongsTo(Jabatan::class);
@@ -19,5 +20,10 @@ class Karyawan extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function jadwals()
+    {
+        return $this->hasMany(Jadwal::class);
     }
 }

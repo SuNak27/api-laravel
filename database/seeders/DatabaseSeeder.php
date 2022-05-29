@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\Jabatan;
+use App\Models\Jadwal;
 use App\Models\Karyawan;
 use App\Models\SettingTahun;
 use App\Models\Shift;
@@ -74,6 +75,12 @@ class DatabaseSeeder extends Seeder
             'nama_shift' => "Malam",
             'jam_masuk' => "18:00",
             'jam_keluar' => "22:00",
+        ]);
+
+        Jadwal::create([
+            'id_karyawan' => '1',
+            'id_tahun' => '1',
+            'tanggal' => '2020-05-28',
         ]);
     }
 }

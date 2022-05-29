@@ -10,8 +10,9 @@ class Jadwal extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $with = ['karyawans', 'tahun'];
 
-    public function karyawan()
+    public function karyawans()
     {
         return $this->belongsTo(Karyawan::class);
     }
@@ -19,5 +20,10 @@ class Jadwal extends Model
     public function tahun()
     {
         return $this->belongsTo(SettingTahun::class);
+    }
+
+    public function detailJadwals()
+    {
+        return $this->hasMany(DetailJadwal::class);
     }
 }

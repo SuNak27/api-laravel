@@ -15,4 +15,9 @@ class Shift extends Model
     {
         return $this->belongsTo(SettingTahun::class);
     }
+
+    public function detailJadwal()
+    {
+        return $this->hasMany(DetailJadwal::class);
+    }
 }

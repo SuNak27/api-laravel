@@ -18,6 +18,7 @@ class CreateJadwalsTable extends Migration
             $table->foreignId('id_karyawan');
             $table->foreignId('id_tahun');
             $table->date('tanggal');
+            $table->string('bulan');
             $table->timestamps();
         });
     }

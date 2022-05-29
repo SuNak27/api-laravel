@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\AturanPresensi;
+use App\Models\DetailJadwal;
 use App\Models\Jabatan;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
@@ -97,6 +98,12 @@ class DatabaseSeeder extends Seeder
             'id_karyawan' => '1',
             'id_tahun' => '1',
             'tanggal' => '2020-05-28',
+            'bulan' => '05',
+        ]);
+
+        DetailJadwal::create([
+            'id_jadwal' => '1',
+            'id_shift' => '1',
         ]);
 
         AturanPresensi::create([

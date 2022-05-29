@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\AturanPresensi;
 use App\Models\Jabatan;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
@@ -81,6 +82,13 @@ class DatabaseSeeder extends Seeder
             'id_karyawan' => '1',
             'id_tahun' => '1',
             'tanggal' => '2020-05-28',
+        ]);
+
+        AturanPresensi::create([
+            'jam_masuk' => '08:00:00',
+            'jam_keluar' => '12:00:00',
+            'terlambat' => '15',
+            'status' => '1',
         ]);
     }
 }

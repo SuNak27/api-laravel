@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AturanPresensiCOntroller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
 use Illuminate\Http\Request;
@@ -28,3 +29,6 @@ Route::resource('/karyawan', KaryawanController::class);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);
+
+// Aturan Presensi
+Route::resource('/aturan-presensi', AturanPresensiCOntroller::class);

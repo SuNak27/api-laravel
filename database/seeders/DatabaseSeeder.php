@@ -7,6 +7,7 @@ use App\Models\AturanPresensi;
 use App\Models\Jabatan;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
+use App\Models\Presensi;
 use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
@@ -45,7 +46,21 @@ class DatabaseSeeder extends Seeder
             'nik' => "123456789",
             'id_jabatan' => 1,
             'id_unit' => 1,
-            'tanggal_lahir' => "2020-05-28",
+            'tanggal_lahir' => "2002-03-07",
+            'status_kawin' => "Belum Kawin",
+            'alamat' => "Paiton",
+            'gender' => 'L',
+            'pendidikan' => 'S1',
+            'agama' => 'Islam',
+            'telepon' => '081234567890'
+        ]);
+
+        Karyawan::create([
+            'nama' => "Ahmad Dani",
+            'nik' => "123456789",
+            'id_jabatan' => 1,
+            'id_unit' => 1,
+            'tanggal_lahir' => "2002-02-02",
             'status_kawin' => "Belum Kawin",
             'alamat' => "Jl. Raya",
             'gender' => 'L',
@@ -89,6 +104,15 @@ class DatabaseSeeder extends Seeder
             'jam_keluar' => '12:00:00',
             'terlambat' => '15',
             'status' => '1',
+        ]);
+
+        Presensi::create([
+            'id_karyawan' => '1',
+            'tanggal' => '2020-05-28',
+            'jam_masuk' => '08:00:00',
+            'jam_keluar' => null,
+            'status' => 'hadir',
+            "keterangan" => null,
         ]);
     }
 }

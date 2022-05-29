@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AturanPresensiCOntroller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\PresensiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,3 +33,6 @@ Route::resource('/jadwal', JadwalController::class);
 
 // Aturan Presensi
 Route::resource('/aturan-presensi', AturanPresensiCOntroller::class);
+
+// Presensi
+Route::resource('presensi', PresensiController::class);

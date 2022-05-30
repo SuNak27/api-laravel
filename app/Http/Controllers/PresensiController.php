@@ -20,7 +20,7 @@ class PresensiController extends Controller
         $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
             ->join("jabatans", "karyawans.id_jabatan", "=", "jabatans.id")
             ->join("units", "karyawans.id_unit", "=", "units.id")
-            ->select("karyawans.nama", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")->get();
+            ->select("karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")->get();
 
         $response = [
             'success' => true,

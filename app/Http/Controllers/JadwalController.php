@@ -165,14 +165,12 @@ class JadwalController extends Controller
 
     public function karyawan($id_karyawan, $bulan, $id_tahun)
     {
-        $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
-            ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
+        $jadwal = Jadwal::join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
             ->where('jadwals.id_karyawan', $id_karyawan)
             ->where('jadwals.id_tahun', $id_tahun)
             ->where('jadwals.bulan', $bulan)
-            ->select('jadwals.tanggal', 'jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')
+            ->select('jadwals.tanggal', 'jadwals.id', 'setting_tahuns.tahun as tahun')
+            ->orderBy('jadwals.tanggal', 'asc')
             ->get();
 
         $result = [];
@@ -181,9 +179,16 @@ class JadwalController extends Controller
             array_push($result, $j);
         }
 
+        $karyawan = Karyawan::join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
+            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+            ->where('karyawans.id', $id_karyawan)
+            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit')
+            ->first();
+
         $response = [
             'success' => true,
             'message' => 'Berhasil',
+            'karyawan' => $karyawan,
             'data' => $jadwal
         ];
 
@@ -196,7 +201,7 @@ class JadwalController extends Controller
             ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
             ->join('units', 'karyawans.id_unit', '=', 'units.id')
             ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
-            ->select('jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', 'jadwals.bulan',)
+            ->select('jadwals.id', 'jadwals.id_karyawan', 'jadwals.id_tahun', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', 'jadwals.bulan',)
             ->orderBy('jadwals.id_karyawan')
             ->groupBy('jadwals.id_tahun', 'jadwals.bulan', 'jadwals.id_karyawan')
             ->get();

@@ -41,6 +41,9 @@ class DatabaseSeeder extends Seeder
         Unit::create([
             'nama_unit' => 'UGD',
         ]);
+        Unit::create([
+            'nama_unit' => 'Poli Gigi',
+        ]);
 
         Karyawan::create([
             'nama' => "Alfad Sabil Haq",
@@ -60,7 +63,7 @@ class DatabaseSeeder extends Seeder
             'nama' => "Ahmad Dani",
             'nik' => "123456789",
             'id_jabatan' => 1,
-            'id_unit' => 1,
+            'id_unit' => 2,
             'tanggal_lahir' => "2002-02-02",
             'status_kawin' => "Belum Kawin",
             'alamat' => "Jl. Raya",
@@ -94,17 +97,17 @@ class DatabaseSeeder extends Seeder
             'jam_keluar' => "22:00",
         ]);
 
-        Jadwal::create([
-            'id_karyawan' => '1',
-            'id_tahun' => '1',
-            'tanggal' => '2020-05-28',
-            'bulan' => '05',
-        ]);
+        // Jadwal::create([
+        //     'id_karyawan' => '1',
+        //     'id_tahun' => '1',
+        //     'tanggal' => '2020-05-28',
+        //     'bulan' => '05',
+        // ]);
 
-        DetailJadwal::create([
-            'id_jadwal' => '1',
-            'id_shift' => '1',
-        ]);
+        // DetailJadwal::create([
+        //     'id_jadwal' => '1',
+        //     'id_shift' => '1',
+        // ]);
 
         AturanPresensi::create([
             'jam_masuk' => '08:00:00',

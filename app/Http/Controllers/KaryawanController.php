@@ -17,9 +17,12 @@ class KaryawanController extends Controller
      */
     public function index()
     {
-        $admin = Karyawan::join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
+            ->orderBy('karyawans.id', 'asc')
             ->get();
 
         $response = [
@@ -88,7 +91,9 @@ class KaryawanController extends Controller
      */
     public function show($id)
     {
-        $admin = Karyawan::join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
+        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'karyawans.id_unit', '=', 'units.id')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
             ->where('karyawans.id', $id)

@@ -22,8 +22,10 @@ class JadwalController extends Controller
     public function index()
     {
         $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+            ->join('detail_units', 'jadwals.id_karyawan', '=', 'detail_units.id_karyawan')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->join('detail_jabatans', 'jadwals.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
             ->select('jadwals.tanggal', 'jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')
             ->get();
@@ -64,11 +66,16 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         try {
+            $id_jabatan = DB::table('detail_jabatans')->where('id_karyawan', $request[0]['id_karyawan'])->where('status', '1')->first()->id;
+            $id_unit = DB::table('detail_units')->where('id_karyawan', $request[0]['id_karyawan'])->where('status', '1')->first()->id;
+
             $jadwal = $request->all();
             foreach ($jadwal as $key => $value) {
                 $jadwal = Jadwal::create([
                     'id_karyawan' => $value['id_karyawan'],
                     'id_tahun' => $value['id_tahun'],
+                    'id_jabatan' => $id_jabatan,
+                    'id_unit' => $id_unit,
                     'tanggal' => $value['tanggal'],
                     'bulan' => $value['bulan'],
                 ]);
@@ -179,10 +186,16 @@ class JadwalController extends Controller
             array_push($result, $j);
         }
 
-        $karyawan = Karyawan::join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
-            ->where('karyawans.id', $id_karyawan)
-            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit')
+        $karyawan = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
+            ->join('detail_jabatans', 'jadwals.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->join('detail_units', 'jadwals.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->where('jadwals.id_karyawan', $id_karyawan)
+            ->where('jadwals.bulan', $bulan)
+            ->where('jadwals.id_tahun', $id_tahun)
+            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit')
+            ->groupBy('jadwals.id_karyawan')
             ->first();
 
         $response = [
@@ -198,10 +211,12 @@ class JadwalController extends Controller
     public function bulanTahun()
     {
         $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('jabatans', 'karyawans.id_jabatan', '=', 'jabatans.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+            ->join('detail_units', 'jadwals.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->join('detail_jabatans', 'jadwals.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
-            ->select('jadwals.id', 'jadwals.id_karyawan', 'jadwals.id_tahun', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', 'jadwals.bulan',)
+            ->select('jadwals.id', 'jadwals.id_karyawan', 'jadwals.id_tahun', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', 'jadwals.bulan')
             ->orderBy('jadwals.id_karyawan')
             ->groupBy('jadwals.id_tahun', 'jadwals.bulan', 'jadwals.id_karyawan')
             ->get();

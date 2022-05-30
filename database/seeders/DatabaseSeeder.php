@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\AturanPresensi;
+use App\Models\DetailJabatan;
 use App\Models\DetailJadwal;
+use App\Models\DetailUnit;
 use App\Models\Jabatan;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
@@ -45,6 +47,34 @@ class DatabaseSeeder extends Seeder
             'nama_unit' => 'Poli Gigi',
         ]);
 
+        DetailJabatan::create([
+            'id_karyawan' => 1,
+            'id_jabatan' => 1,
+            'status' => '1',
+        ]);
+        DetailJabatan::create([
+            'id_karyawan' => 2,
+            'id_jabatan' => 1,
+            'status' => '1',
+        ]);
+
+        DetailUnit::create([
+            'id_karyawan' => 1,
+            'id_unit' => 1,
+            'status' => '0',
+            'deleted_at' => now(),
+        ]);
+        DetailUnit::create([
+            'id_karyawan' => 2,
+            'id_unit' => 1,
+            'status' => '1',
+        ]);
+        DetailUnit::create([
+            'id_karyawan' => 1,
+            'id_unit' => 2,
+            'status' => '1',
+        ]);
+
         Karyawan::create([
             'nama' => "Alfad Sabil Haq",
             'nik' => "123456789",
@@ -63,7 +93,7 @@ class DatabaseSeeder extends Seeder
             'nama' => "Ahmad Dani",
             'nik' => "123456789",
             'id_jabatan' => 1,
-            'id_unit' => 2,
+            'id_unit' => 1,
             'tanggal_lahir' => "2002-02-02",
             'status_kawin' => "Belum Kawin",
             'alamat' => "Jl. Raya",

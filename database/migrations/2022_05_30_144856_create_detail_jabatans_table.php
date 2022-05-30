@@ -18,7 +18,7 @@ class CreateDetailJabatansTable extends Migration
             $table->foreignId('id_karyawan');
             $table->foreignId('id_jabatan');
             $table->enum('status', ['0', '1']);
-            $table->timestamp('deleted_at');
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

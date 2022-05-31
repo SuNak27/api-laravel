@@ -71,19 +71,31 @@ class JadwalController extends Controller
 
             $jadwal = $request->all();
             foreach ($jadwal as $key => $value) {
-                $jadwal = Jadwal::create([
-                    'id_karyawan' => $value['id_karyawan'],
-                    'id_tahun' => $value['id_tahun'],
-                    'id_jabatan' => $id_jabatan,
-                    'id_unit' => $id_unit,
-                    'tanggal' => $value['tanggal'],
-                    'bulan' => $value['bulan'],
-                ]);
 
-                DetailJadwal::create([
-                    'id_jadwal' => $jadwal->id,
-                    'id_shift' => $value['id_shift'],
-                ]);
+                $check = Jadwal::where('id_karyawan', $value['id_karyawan'])->where('tanggal', $value['tanggal'])->where('bulan', $value['bulan'])->first();
+
+                if ($check) {
+                    $id_jadwal = $check->id;
+                } else {
+                    $jadwal = Jadwal::create([
+                        'id_karyawan' => $value['id_karyawan'],
+                        'id_tahun' => $value['id_tahun'],
+                        'id_jabatan' => $id_jabatan,
+                        'id_unit' => $id_unit,
+                        'tanggal' => $value['tanggal'],
+                        'bulan' => $value['bulan'],
+                    ]);
+                    $id_jadwal = $jadwal->id;
+                }
+
+                $checkDetail = DetailJadwal::where('id_jadwal', $id_jadwal)->where('id_shift', $value['id_shift'])->first();
+
+                if (!$checkDetail) {
+                    DetailJadwal::create([
+                        'id_jadwal' => $id_jadwal,
+                        'id_shift' => $value['id_shift'],
+                    ]);
+                }
             }
 
             $response = [

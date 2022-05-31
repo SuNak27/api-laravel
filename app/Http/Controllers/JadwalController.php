@@ -168,7 +168,24 @@ class JadwalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        Jadwal::findOrFail($id);
+        $new_jadwal = $request->all();
+
+        DetailJadwal::where('id_jadwal', $id)->delete();
+
+        foreach ($new_jadwal as $key => $value) {
+            DetailJadwal::create([
+                'id_jadwal' => $id,
+                'id_shift' => $new_jadwal[$key]['id_shift'],
+            ]);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**

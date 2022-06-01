@@ -15,6 +15,7 @@ use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -86,7 +87,9 @@ class DatabaseSeeder extends Seeder
             'gender' => 'L',
             'pendidikan' => 'S1',
             'agama' => 'Islam',
-            'telepon' => '081234567890'
+            'telepon' => '081234567890',
+            'username' => 'sabil',
+            'password' => Hash::make('123456')
         ]);
 
         Karyawan::create([
@@ -100,7 +103,9 @@ class DatabaseSeeder extends Seeder
             'gender' => 'L',
             'pendidikan' => 'S1',
             'agama' => 'Islam',
-            'telepon' => '081234567890'
+            'telepon' => '081234567890',
+            'username' => 'dani',
+            'password' => Hash::make('123456')
         ]);
 
         Shift::create([

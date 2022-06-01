@@ -39,6 +39,7 @@ Route::resource('/aturan-presensi', AturanPresensiCOntroller::class);
 
 // Presensi
 Route::resource('/presensi', PresensiController::class);
+Route::get('/presensi/{id_karyawan}/tanggal/{tanggal}', [PresensiController::class, 'id_presensi']);
 
 // Shift
 Route::resource('/shift', ShiftController::class);

@@ -140,4 +140,19 @@ class PresensiController extends Controller
     {
         //
     }
+
+    public function id_presensi($id_karyawan, $tanggal)
+    {
+        $presensi = Presensi::where("id_karyawan", $id_karyawan)
+            ->where("tanggal", $tanggal)
+            ->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

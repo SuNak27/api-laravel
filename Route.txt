@@ -25,6 +25,7 @@ https://api-graha.belanj.id/public/api/aturan-presensi --------> GET
 
 // Presensi
 https://api-graha.belanj.id/public/api/presensi --------> GET
+https://api-graha.belanj.id/public/api/presensi/{:id_karyawan}/tanggal/{:tanggal} --------> GET
 https://api-graha.belanj.id/public/api/presensi --------> POST
 https://api-graha.belanj.id/public/api/presensi/{:id_presensi} --------> PUT
 {

@@ -105,16 +105,6 @@ class PresensiController extends Controller
     public function update(Request $request, $id)
     {
         $presensi = Presensi::findOrFail($id);
-        $validator = Validator::make($request->all(), [
-            'id_karyawan' => 'required',
-            'tanggal' => 'required',
-            'jam_masuk' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
 
         try {
             $presensi->update($request->all());

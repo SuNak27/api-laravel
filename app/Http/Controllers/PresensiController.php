@@ -18,8 +18,10 @@ class PresensiController extends Controller
     public function index()
     {
         $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
-            ->join("jabatans", "karyawans.id_jabatan", "=", "jabatans.id")
-            ->join("units", "karyawans.id_unit", "=", "units.id")
+            ->join("detail_jabatans", "karyawans.id_jabatan", "=", "detail_jabatans.id")
+            ->join("jabatans", "detail_jabatans.id_jabatan", "=", "jabatans.id")
+            ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
+            ->join("units", "detail_units.id_unit", "=", "units.id")
             ->select("karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")->get();
 
         $response = [

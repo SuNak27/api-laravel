@@ -82,7 +82,18 @@ class PresensiController extends Controller
      */
     public function show($id)
     {
-        //
+        $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
+            ->join("detail_jabatans", "karyawans.id_jabatan", "=", "detail_jabatans.id")
+            ->select("karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")
+            ->where("presensis.id", $id)->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**

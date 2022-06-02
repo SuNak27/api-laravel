@@ -105,7 +105,14 @@ class SettingTahunController extends Controller
         try {
             $settingTahun = SettingTahun::findOrFail($id);
 
+            $check = SettingTahun::where('status', '1')->first();
 
+            if ($request->status == 1) {
+                if ($check->id != $settingTahun->id) {
+                    $check->status = "0";
+                    $check->save();
+                }
+            }
 
             $settingTahun->update($request->all());
 

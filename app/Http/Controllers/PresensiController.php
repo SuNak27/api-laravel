@@ -163,11 +163,11 @@ class PresensiController extends Controller
                 'status' => $request->status,
                 'keterangan' => $request->keterangan
             ];
-            $presensi = Presensi::where('id', $id)->update($data);
+            Presensi::where('id', $id)->update($data);
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $presensi
+                'data' => $data
             ];
 
             return response()->json($response, Response::HTTP_OK);

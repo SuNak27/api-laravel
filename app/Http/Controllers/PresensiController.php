@@ -84,6 +84,7 @@ class PresensiController extends Controller
                 'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,
                 'status' => $request->status,
+                'mode_absen' => $request->mode_absen,
                 'keterangan' => $request->keterangan
             ];
 

@@ -132,17 +132,17 @@ class DatabaseSeeder extends Seeder
             'jam_keluar' => "22:00",
         ]);
 
-        // Jadwal::create([
-        //     'id_karyawan' => '1',
-        //     'id_tahun' => '1',
-        //     'tanggal' => '2020-05-28',
-        //     'bulan' => '05',
-        // ]);
+        Jadwal::create([
+            'id_karyawan' => '1',
+            'id_tahun' => '1',
+            'tanggal' => '2022-06-01',
+            'bulan' => '06',
+        ]);
 
-        // DetailJadwal::create([
-        //     'id_jadwal' => '1',
-        //     'id_shift' => '1',
-        // ]);
+        DetailJadwal::create([
+            'id_jadwal' => '1',
+            'id_shift' => '1',
+        ]);
 
         AturanPresensi::create([
             'jam_masuk' => '08:00:00',
@@ -153,10 +153,10 @@ class DatabaseSeeder extends Seeder
 
         Presensi::create([
             'id_karyawan' => '1',
-            'tanggal' => '2020-05-28',
+            'tanggal' => '2022-06-01',
             'jam_masuk' => '08:00:00',
             'jam_keluar' => null,
-            'status' => 'hadir',
+            'status' => 'Hadir',
             "keterangan" => null,
         ]);
     }

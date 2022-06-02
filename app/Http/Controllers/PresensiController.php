@@ -22,7 +22,13 @@ class PresensiController extends Controller
             ->join("jabatans", "detail_jabatans.id_jabatan", "=", "jabatans.id")
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
-            ->select("karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")->get();
+            ->join("jadwals", function ($join) {
+                $join->on("karyawans.id", "=", "jadwals.id_karyawan")
+                    ->on("presensis.tanggal", "=", "jadwals.tanggal");
+            })
+            ->join('detail_jadwals', "jadwals.id", '=', "detail_jadwals.id_jadwal")
+            ->join('shifts', "detail_jadwals.id_shift", "=", "shifts.id")
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift", "shifts.kode_shift")->get();
 
         $response = [
             'success' => true,

@@ -5,6 +5,7 @@ use App\Http\Controllers\AturanPresensiCOntroller;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\SettingTahunController;
 use App\Http\Controllers\ShiftController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ Route::get('/admin', [AdminController::class, 'index']);
 
 // Karyawan
 Route::resource('/karyawan', KaryawanController::class);
+Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);
@@ -39,6 +41,10 @@ Route::resource('/aturan-presensi', AturanPresensiCOntroller::class);
 
 // Presensi
 Route::resource('/presensi', PresensiController::class);
+Route::get('/presensi/{id_karyawan}/tanggal/{tanggal}', [PresensiController::class, 'id_presensi']);
 
 // Shift
 Route::resource('/shift', ShiftController::class);
+
+// Setting Tahun
+Route::resource('/setting_tahun', SettingTahunController::class);

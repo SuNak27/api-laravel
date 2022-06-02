@@ -15,6 +15,7 @@ use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,6 +30,11 @@ class DatabaseSeeder extends Seeder
             'nama' => 'Admin',
             'username' => 'admin',
             'password' => bcrypt('admin'),
+        ]);
+
+        SettingTahun::create([
+            'tahun' => '2021',
+            'status' => '0',
         ]);
 
         SettingTahun::create([
@@ -86,7 +92,9 @@ class DatabaseSeeder extends Seeder
             'gender' => 'L',
             'pendidikan' => 'S1',
             'agama' => 'Islam',
-            'telepon' => '081234567890'
+            'telepon' => '081234567890',
+            'username' => 'sabil',
+            'password' => Hash::make('123456')
         ]);
 
         Karyawan::create([
@@ -100,7 +108,9 @@ class DatabaseSeeder extends Seeder
             'gender' => 'L',
             'pendidikan' => 'S1',
             'agama' => 'Islam',
-            'telepon' => '081234567890'
+            'telepon' => '081234567890',
+            'username' => 'dani',
+            'password' => Hash::make('123456')
         ]);
 
         Shift::create([
@@ -127,17 +137,19 @@ class DatabaseSeeder extends Seeder
             'jam_keluar' => "22:00",
         ]);
 
-        // Jadwal::create([
-        //     'id_karyawan' => '1',
-        //     'id_tahun' => '1',
-        //     'tanggal' => '2020-05-28',
-        //     'bulan' => '05',
-        // ]);
+        Jadwal::create([
+            'id_karyawan' => '1',
+            'id_tahun' => '1',
+            'id_jabatan' => '1',
+            'id_unit' => '1',
+            'tanggal' => '2022-06-01',
+            'bulan' => '06',
+        ]);
 
-        // DetailJadwal::create([
-        //     'id_jadwal' => '1',
-        //     'id_shift' => '1',
-        // ]);
+        DetailJadwal::create([
+            'id_jadwal' => '1',
+            'id_shift' => '1',
+        ]);
 
         AturanPresensi::create([
             'jam_masuk' => '08:00:00',
@@ -148,10 +160,10 @@ class DatabaseSeeder extends Seeder
 
         Presensi::create([
             'id_karyawan' => '1',
-            'tanggal' => '2020-05-28',
+            'tanggal' => '2022-06-01',
             'jam_masuk' => '08:00:00',
             'jam_keluar' => null,
-            'status' => 'hadir',
+            'status' => 'Hadir',
             "keterangan" => null,
         ]);
     }

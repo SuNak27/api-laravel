@@ -18,9 +18,17 @@ class PresensiController extends Controller
     public function index()
     {
         $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
-            ->join("jabatans", "karyawans.id_jabatan", "=", "jabatans.id")
-            ->join("units", "karyawans.id_unit", "=", "units.id")
-            ->select("karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")->get();
+            ->join("detail_jabatans", "karyawans.id_jabatan", "=", "detail_jabatans.id")
+            ->join("jabatans", "detail_jabatans.id_jabatan", "=", "jabatans.id")
+            ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
+            ->join("units", "detail_units.id_unit", "=", "units.id")
+            ->join("jadwals", function ($join) {
+                $join->on("karyawans.id", "=", "jadwals.id_karyawan")
+                    ->on("presensis.tanggal", "=", "jadwals.tanggal");
+            })
+            ->join('detail_jadwals', "jadwals.id", '=', "detail_jadwals.id_jadwal")
+            ->join('shifts', "detail_jadwals.id_shift", "=", "shifts.id")
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift", "shifts.kode_shift")->get();
 
         $response = [
             'success' => true,
@@ -116,16 +124,6 @@ class PresensiController extends Controller
     public function update(Request $request, $id)
     {
         $presensi = Presensi::findOrFail($id);
-        $validator = Validator::make($request->all(), [
-            'id_karyawan' => 'required',
-            'tanggal' => 'required',
-            'jam_masuk' => 'required',
-            'status' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
 
         try {
             $presensi->update($request->all());
@@ -150,5 +148,20 @@ class PresensiController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function id_presensi($id_karyawan, $tanggal)
+    {
+        $presensi = Presensi::where("id_karyawan", $id_karyawan)
+            ->where("tanggal", $tanggal)
+            ->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Karyawan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -170,5 +171,53 @@ class KaryawanController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+                ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+                ->join('units', 'karyawans.id_unit', '=', 'units.id')
+                ->select('karyawans.id as id_karyawan', 'karyawans.password', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
+                ->where('username', $request->username)->first();
+            if ($karyawan) {
+                if (Hash::check($request->password, $karyawan->password)) {
+                    $response = [
+                        'success' => true,
+                        'message' => 'Berhasil',
+                        'data' => $karyawan
+                    ];
+
+                    return response()->json($response, Response::HTTP_OK);
+                } else {
+                    $response = [
+                        'success' => false,
+                        'message' => 'Password Salah'
+                    ];
+
+                    return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+            } else {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan Tidak Ditemukan'
+                ];
+
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 }

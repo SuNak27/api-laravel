@@ -26,8 +26,8 @@ class CreateKaryawansTable extends Migration
             $table->enum('pendidikan', ['SMP Sederajat', 'SMA Sederajat', 'S1', 'S2', 'Lainnya']);
             $table->string('agama')->nullable();
             $table->string('telepon');
-            $table->string('username')->default('user');
-            $table->string('password')->default(bcrypt('user'));
+            $table->string('username')->unique();
+            $table->string('password');
             $table->timestamps();
         });
     }

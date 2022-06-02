@@ -16,6 +16,13 @@ https://api-graha.belanj.id/public/api/karyawan/{:id} ------> PUT
          'telepon' 	=> 'required|numeric'
 }
 
+// Login Karyawan
+https://api-graha.belanj.id/public/api/login/karyawan --------> POST
+{
+	'username' 	=> 'required',  ======================== 'sabil' atau 'dani'
+	'password' 	=> 'required',  ======================== '123456'
+}
+
 // Jadwal
 https://api-graha.belanj.id/public/api/jadwal ------------------> GET
 https://api-graha.belanj.id/public/api/jadwal/{:id_karyawan} --------> GET
@@ -25,11 +32,14 @@ https://api-graha.belanj.id/public/api/aturan-presensi --------> GET
 
 // Presensi
 https://api-graha.belanj.id/public/api/presensi --------> GET
+https://api-graha.belanj.id/public/api/presensi/{:id_karyawan}/tanggal/{:tanggal} --------> GET
 https://api-graha.belanj.id/public/api/presensi --------> POST
 https://api-graha.belanj.id/public/api/presensi/{:id_presensi} --------> PUT
 {
 	'id_karyawan'	 => 'required',
 	'tanggal'	 => 'required',
 	'jam_masuk'	 => 'required',
+	'jam_keluar'	 => '...',
 	'status' 	 => 'required',
+	'keterangan'	 => '...'
 }

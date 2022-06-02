@@ -33,6 +33,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         SettingTahun::create([
+            'tahun' => '2021',
+            'status' => '0',
+        ]);
+
+        SettingTahun::create([
             'tahun' => '2022',
             'status' => '1',
         ]);
@@ -135,6 +140,8 @@ class DatabaseSeeder extends Seeder
         Jadwal::create([
             'id_karyawan' => '1',
             'id_tahun' => '1',
+            'id_jabatan' => '1',
+            'id_unit' => '1',
             'tanggal' => '2022-06-01',
             'bulan' => '06',
         ]);

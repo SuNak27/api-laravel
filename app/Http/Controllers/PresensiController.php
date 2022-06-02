@@ -61,6 +61,7 @@ class PresensiController extends Controller
             'id_karyawan' => 'required',
             'jam' => 'required',
             'status' => 'required',
+            'mode_absen' => 'required',
         ]);
 
         if ($validator->fails()) {

@@ -102,7 +102,29 @@ class SettingTahunController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $settingTahun = SettingTahun::findOrFail($id);
+
+
+
+            $settingTahun->update($request->all());
+
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $settingTahun
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+
+            return response()->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

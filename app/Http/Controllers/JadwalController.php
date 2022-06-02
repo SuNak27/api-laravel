@@ -22,9 +22,9 @@ class JadwalController extends Controller
     public function index()
     {
         $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('detail_units', 'jadwals.id_karyawan', '=', 'detail_units.id_karyawan')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
-            ->join('detail_jabatans', 'jadwals.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
             ->select('jadwals.tanggal', 'jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')

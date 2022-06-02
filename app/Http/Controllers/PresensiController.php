@@ -59,7 +59,7 @@ class PresensiController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
-            'jam_masuk' => 'required',
+            'jam' => 'required',
             'status' => 'required',
         ]);
 
@@ -68,7 +68,25 @@ class PresensiController extends Controller
         }
 
         try {
-            $presensi = Presensi::create($request->all());
+            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
+            $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
+
+            if ($request->jam_keluar == null) {
+                $jam_keluar = null;
+            } else {
+                $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
+            }
+
+            $data = [
+                'id_karyawan' => $request->id_karyawan,
+                'tanggal' => $tanggal,
+                'jam_masuk' => $jam_masuk,
+                'jam_keluar' => $jam_keluar,
+                'status' => $request->status,
+                'keterangan' => $request->keterangan
+            ];
+
+            $presensi = Presensi::create($data);
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',

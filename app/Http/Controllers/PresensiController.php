@@ -59,7 +59,6 @@ class PresensiController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
-            'tanggal' => 'required',
             'jam_masuk' => 'required',
             'status' => 'required',
         ]);
@@ -158,6 +157,20 @@ class PresensiController extends Controller
         $presensi = Presensi::where("id_karyawan", $id_karyawan)
             ->where("tanggal", $tanggal)
             ->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    public function karyawan($id_karyawan)
+    {
+        $presensi = Presensi::where("id_karyawan", $id_karyawan)
+            ->get();
 
         $response = [
             'success' => true,

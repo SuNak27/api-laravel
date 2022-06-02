@@ -146,8 +146,6 @@ class PresensiController extends Controller
         $presensi = Presensi::findOrFail($id);
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
-            $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
 
             if ($request->jam_keluar == null) {
                 $jam_keluar = null;
@@ -156,18 +154,13 @@ class PresensiController extends Controller
             }
 
             $data = [
-                'id_karyawan' => $request->id_karyawan,
-                'tanggal' => $tanggal,
-                'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,
-                'status' => $request->status,
-                'keterangan' => $request->keterangan
             ];
-            Presensi::where('id', $id)->update($data);
+            $presensi = Presensi::where('id', $id)->update($data);
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $data
+                'data' => $presensi
             ];
 
             return response()->json($response, Response::HTTP_OK);

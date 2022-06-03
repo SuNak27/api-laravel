@@ -69,7 +69,7 @@ class PresensiController extends Controller
         }
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
+            $jam_masuk = gmdate('H:i:s', $request->jam);
             $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
 
             if ($request->jam_keluar == null) {

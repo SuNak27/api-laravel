@@ -17,7 +17,7 @@ class ShiftController extends Controller
      */
     public function index()
     {
-        $shift = Shift::shift();
+        $shift = Shift::join("setting_tahuns", "shifts.id_tahun", "=", "setting_tahuns.id")->select("shifts.*", "setting_tahuns.tahun", "setting_tahuns.status")->get();
 
         $response = [
             'success' => true,

@@ -14,7 +14,7 @@ class Shift extends Model
 
     public function shift()
     {
-        return DB::table('shifts')->join("setting_tahuns", "shifts.id_tahun", "=", "setting_tahuns.id")->select("shifts.*", "setting_tahuns.tahun")->get();
+        return DB::table('shifts')->join("setting_tahuns", "shifts.id_tahun", "=", "setting_tahuns.id")->select("shifts.*", "setting_tahuns.tahun", "setting_tahuns.status")->get();
     }
 
     public function tahun()

@@ -114,7 +114,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Shift::create([
-            'id_tahun' => '1',
+            'id_tahun' => '2',
             'kode_shift' => "P-001",
             'nama_shift' => "Pagi",
             'jam_masuk' => "08:00",
@@ -122,7 +122,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Shift::create([
-            'id_tahun' => '1',
+            'id_tahun' => '2',
             'kode_shift' => "S-001",
             'nama_shift' => "Siang",
             'jam_masuk' => "13:00",
@@ -130,7 +130,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Shift::create([
-            'id_tahun' => '1',
+            'id_tahun' => '2',
             'kode_shift' => "M-001",
             'nama_shift' => "Malam",
             'jam_masuk' => "18:00",
@@ -139,7 +139,7 @@ class DatabaseSeeder extends Seeder
 
         Jadwal::create([
             'id_karyawan' => '1',
-            'id_tahun' => '1',
+            'id_tahun' => '2',
             'id_jabatan' => '1',
             'id_unit' => '1',
             'tanggal' => '2022-06-01',

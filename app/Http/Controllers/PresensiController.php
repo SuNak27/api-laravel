@@ -158,7 +158,9 @@ class PresensiController extends Controller
             $data = [
                 'jam_keluar' => $jam_keluar,
             ];
-            $presensi = Presensi::where('id', $id)->update($data);
+            Presensi::where('id', $id)->update($data);
+
+            $presensi = Presensi::find($id)->first();
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',

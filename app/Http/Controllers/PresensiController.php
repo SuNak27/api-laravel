@@ -114,7 +114,7 @@ class PresensiController extends Controller
             ->join("jabatans", "detail_jabatans.id_jabatan", "=", "jabatans.id")
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
-            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan")
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama",  "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.mode_absen", "presensis.keterangan")
             ->where("presensis.id", $id)->first();
 
         $response = [
@@ -148,6 +148,8 @@ class PresensiController extends Controller
         $presensi = Presensi::findOrFail($id);
 
         try {
+            $jam_masuk = gmdate('H:i:s', $request->jam);
+            $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
 
             if ($request->jam_keluar == null) {
                 $jam_keluar = null;
@@ -156,8 +158,15 @@ class PresensiController extends Controller
             }
 
             $data = [
+                'id_karyawan' => $request->id_karyawan,
+                'tanggal' => $tanggal,
+                'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,
+                'status' => $request->status,
+                'mode_absen' => $request->mode_absen,
+                'keterangan' => $request->keterangan
             ];
+
             Presensi::where('id', $id)->update($data);
 
             $presensi = Presensi::find($id)->first();

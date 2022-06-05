@@ -35,6 +35,7 @@ Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 Route::resource('/jadwal', JadwalController::class);
 Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
 Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
+Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
 
 // Aturan Presensi
 Route::resource('/aturan-presensi', AturanPresensiCOntroller::class);

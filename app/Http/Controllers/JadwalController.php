@@ -258,4 +258,27 @@ class JadwalController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
+
+    public function check($id_karyawan, $id_shift, $tanggal)
+    {
+        $jadwal = Jadwal::join('detail_jadwals', 'jadwals.id', '=', 'detail_jadwals.id_jadwal')
+            ->where('jadwals.id_karyawan', $id_karyawan)
+            ->where('jadwals.tanggal', $tanggal)
+            ->where('detail_jadwals.id_shift', $id_shift)
+            ->first();
+
+        if ($jadwal) {
+            $response = [
+                'success' => true,
+                'message' => 'Ada Jadwal',
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'Tidak ada Jadwal',
+            ];
+        }
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

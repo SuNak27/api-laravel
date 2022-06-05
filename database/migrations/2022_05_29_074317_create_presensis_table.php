@@ -16,6 +16,7 @@ class CreatePresensisTable extends Migration
         Schema::create('presensis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_karyawan');
+            $table->foreignId('id_shift');
             $table->date('tanggal');
             $table->time('jam_masuk');
             $table->time('jam_keluar')->nullable();

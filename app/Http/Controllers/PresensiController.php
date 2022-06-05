@@ -80,6 +80,7 @@ class PresensiController extends Controller
 
             $data = [
                 'id_karyawan' => $request->id_karyawan,
+                'id_shift' => $request->id_shift,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,
@@ -159,6 +160,7 @@ class PresensiController extends Controller
 
             $data = [
                 'id_karyawan' => $request->id_karyawan,
+                'id_shift' => $request->id_shift,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,

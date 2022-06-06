@@ -149,7 +149,7 @@ class PresensiController extends Controller
         $presensi = Presensi::findOrFail($id);
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam);
+            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
             $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
 
             if ($request->jam_keluar == null) {

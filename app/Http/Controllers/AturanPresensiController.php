@@ -15,7 +15,7 @@ class AturanPresensiCOntroller extends Controller
      */
     public function index()
     {
-        $aturan = AturanPresensi::all();
+        $aturan = AturanPresensi::first();
         $response = [
             'success' => true,
             'message' => 'Berhasil',

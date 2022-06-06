@@ -146,20 +146,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         AturanPresensi::create([
-            'jam_masuk' => '08:00:00',
-            'jam_keluar' => '12:00:00',
             'terlambat' => '15',
             'status' => '1',
-        ]);
-
-        Presensi::create([
-            'id_karyawan' => '1',
-            'id_shift' => '1',
-            'tanggal' => '2022-06-01',
-            'jam_masuk' => '08:00:00',
-            'jam_keluar' => null,
-            'status' => 'Hadir',
-            "keterangan" => null,
+            'denda' => '10000',
         ]);
     }
 }

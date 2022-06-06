@@ -15,9 +15,8 @@ class CreateAturanPresensisTable extends Migration
     {
         Schema::create('aturan_presensis', function (Blueprint $table) {
             $table->id();
-            $table->time("jam_masuk");
-            $table->time("jam_keluar");
             $table->integer("terlambat");
+            $table->integer("denda");
             $table->enum('status', ['0', '1']);
             $table->timestamps();
         });

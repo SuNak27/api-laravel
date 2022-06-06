@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AturanPresensi;
+use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -76,7 +77,27 @@ class AturanPresensiCOntroller extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $presensi = AturanPresensi::findOrFail($id);
+
+        try {
+            $data = $request->all();
+            $presensi->update($data);
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $presensi
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => 'Gagal',
+                'data' => $e->getMessage()
+            ];
+
+            return response()->json($response, Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**

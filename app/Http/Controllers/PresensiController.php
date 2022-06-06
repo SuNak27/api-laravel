@@ -27,10 +27,7 @@ class PresensiController extends Controller
                     ->on("presensis.tanggal", "=", "jadwals.tanggal");
             })
             ->join('detail_jadwals', "jadwals.id", '=', "detail_jadwals.id_jadwal")
-            ->join("shifts", function ($join) {
-                $join->on("detail_jadwals.id", "=", "shifts.id")
-                    ->on("presensis.id_shift", "=", "shifts.id");
-            })
+            ->join("shifts", "presensis.id_shift", "=", "shifts.id")
             ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift", "shifts.kode_shift")->get();
 
         $response = [
@@ -72,7 +69,7 @@ class PresensiController extends Controller
         }
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam);
+            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
             $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
 
             if ($request->jam_keluar == null) {

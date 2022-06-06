@@ -67,17 +67,11 @@ class DatabaseSeeder extends Seeder
         DetailUnit::create([
             'id_karyawan' => 1,
             'id_unit' => 1,
-            'status' => '0',
-            'deleted_at' => now(),
+            'status' => '1',
         ]);
         DetailUnit::create([
             'id_karyawan' => 2,
             'id_unit' => 1,
-            'status' => '1',
-        ]);
-        DetailUnit::create([
-            'id_karyawan' => 1,
-            'id_unit' => 2,
             'status' => '1',
         ]);
 
@@ -137,19 +131,19 @@ class DatabaseSeeder extends Seeder
             'jam_keluar' => "22:00",
         ]);
 
-        Jadwal::create([
-            'id_karyawan' => '1',
-            'id_tahun' => '2',
-            'id_jabatan' => '1',
-            'id_unit' => '1',
-            'tanggal' => '2022-06-01',
-            'bulan' => '06',
-        ]);
+        // Jadwal::create([
+        //     'id_karyawan' => '1',
+        //     'id_tahun' => '2',
+        //     'id_jabatan' => '1',
+        //     'id_unit' => '1',
+        //     'tanggal' => '2022-06-01',
+        //     'bulan' => '06',
+        // ]);
 
-        DetailJadwal::create([
-            'id_jadwal' => '1',
-            'id_shift' => '1',
-        ]);
+        // DetailJadwal::create([
+        //     'id_jadwal' => '1',
+        //     'id_shift' => '1',
+        // ]);
 
         AturanPresensi::create([
             'jam_masuk' => '08:00:00',

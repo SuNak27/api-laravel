@@ -7,7 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AturanPresensiCOntroller extends Controller
+class AturanPresensiController extends Controller
 {
     /**
      * Display a listing of the resource.

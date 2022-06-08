@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AturanPresensi;
-use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -89,7 +89,7 @@ class AturanPresensiController extends Controller
             ];
 
             return response()->json($response, Response::HTTP_OK);
-        } catch (Exception $e) {
+        } catch (QueryException $e) {
             $response = [
                 'success' => false,
                 'message' => 'Gagal',

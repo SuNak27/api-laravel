@@ -80,8 +80,7 @@ class AturanPresensiController extends Controller
         $presensi = AturanPresensi::findOrFail($id);
 
         try {
-            $data = $request->all();
-            $presensi->update($data);
+            $presensi->update($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
@@ -90,13 +89,7 @@ class AturanPresensiController extends Controller
 
             return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
-            $response = [
-                'success' => false,
-                'message' => 'Gagal',
-                'data' => $e->getMessage()
-            ];
-
-            return response()->json($response, Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 

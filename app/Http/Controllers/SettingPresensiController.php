@@ -16,7 +16,7 @@ class SettingPresensiController extends Controller
      */
     public function index()
     {
-        $presensi = AturanPresensi::all();
+        $presensi = AturanPresensi::first();
         $response = [
             'success' => true,
             'message' => 'Berhasil',

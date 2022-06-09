@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailJabatan;
+use App\Models\DetailUnit;
 use App\Models\Karyawan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -71,7 +73,43 @@ class KaryawanController extends Controller
         }
 
         try {
-            $karyawan = Karyawan::create($request->all());
+            $data = [
+                'nama' => $request->nama,
+                'nik' => $request->nik,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'status_kawin' => $request->status_kawin,
+                'alamat' => $request->alamat,
+                'gender' => $request->gender,
+                'pendidikan' => $request->pendidikan,
+                'telepon' => $request->telepon,
+            ];
+
+            $karyawan = Karyawan::create($data);
+            $detailJabatan = [
+                'id_jabatan' => $request->id_jabatan,
+                'id_karyawan' => $karyawan->id,
+            ];
+            $detailUnit = [
+                'id_unit' => $request->id_unit,
+                'id_karyawan' => $karyawan->id,
+            ];
+
+            $dJabatan = DetailJabatan::create($detailJabatan);
+            $dUnit = DetailUnit::create($detailUnit);
+
+            Karyawan::where('id', $karyawan->id)->update([
+                'id_jabatan' => $dJabatan->id,
+                'id_unit' => $dUnit->id,
+            ]);
+
+            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+                ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+                ->join('units', 'detail_units.id_unit', '=', 'units.id')
+                ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
+                ->where('karyawans.id', $karyawan->id);
+
+
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',

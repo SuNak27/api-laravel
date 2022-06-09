@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AturanPresensiCOntroller;
+use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingTahunController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +52,9 @@ Route::resource('/shift', ShiftController::class);
 
 // Setting Tahun
 Route::resource('/setting_tahun', SettingTahunController::class);
+
+// Jabatan
+Route::resource('/jabatan', JabatanController::class);
+
+// Unit
+Route::resource('/unit', UnitController::class);

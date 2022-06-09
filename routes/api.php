@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AturanPresensiCOntroller;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\SettingPresensiController;
 use App\Http\Controllers\SettingTahunController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UnitController;
@@ -40,7 +40,7 @@ Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
 Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
 
 // Aturan Presensi
-Route::resource('/aturan-presensi', AturanPresensiController::class);
+Route::resource('/aturan-presensi', SettingPresensiController::class);
 
 // Presensi
 Route::resource('/presensi', PresensiController::class);

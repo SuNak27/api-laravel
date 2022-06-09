@@ -7,7 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AturanPresensiController extends Controller
+class SettingPresensiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,11 @@ class AturanPresensiController extends Controller
      */
     public function index()
     {
-        $aturan = AturanPresensi::first();
+        $presensi = AturanPresensi::all();
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $aturan
+            'data' => $presensi
         ];
         return response()->json($response, Response::HTTP_OK);
     }
@@ -77,10 +77,11 @@ class AturanPresensiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $presensi = AturanPresensi::findOrFail($id);
-
         try {
+            $presensi = AturanPresensi::findOrFail($id);
+
             $presensi->update($request->all());
+
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
@@ -89,7 +90,13 @@ class AturanPresensiController extends Controller
 
             return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
-            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => null
+            ];
+
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 

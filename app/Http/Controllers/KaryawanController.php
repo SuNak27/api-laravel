@@ -82,32 +82,37 @@ class KaryawanController extends Controller
                 'gender' => $request->gender,
                 'pendidikan' => $request->pendidikan,
                 'telepon' => $request->telepon,
+                'agama' => $request->agama,
+                'username' => $request->username,
             ];
 
             $karyawan = Karyawan::create($data);
             $detailJabatan = [
                 'id_jabatan' => $request->id_jabatan,
                 'id_karyawan' => $karyawan->id,
+                'status' => "1",
             ];
             $detailUnit = [
                 'id_unit' => $request->id_unit,
                 'id_karyawan' => $karyawan->id,
+                'status' => "1",
             ];
 
             $dJabatan = DetailJabatan::create($detailJabatan);
             $dUnit = DetailUnit::create($detailUnit);
 
-            Karyawan::where('id', $karyawan->id)->update([
+            $newKaryawan = [
                 'id_jabatan' => $dJabatan->id,
                 'id_unit' => $dUnit->id,
-            ]);
+            ];
+            $karyawan->update($newKaryawan);
 
             $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
                 ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
                 ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
                 ->join('units', 'detail_units.id_unit', '=', 'units.id')
                 ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-                ->where('karyawans.id', $karyawan->id);
+                ->where('karyawans.id', $karyawan->id)->first();
 
 
             $response = [
@@ -118,7 +123,17 @@ class KaryawanController extends Controller
 
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
-            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+            // return response()->json([
+            //     'message' => "Failed " . $e->errorInfo
+            // ], Response::HTTP_UNPROCESSABLE_ENTITY);
+
+            $response = [
+                'success' => false,
+                'message' => 'Gagal',
+                'data' => $e->errorInfo
+            ];
+
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -131,18 +146,18 @@ class KaryawanController extends Controller
     public function show($id)
     {
         $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->leftJoin('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->join('units', 'karyawans.id_unit', '=', 'units.id')
+            ->leftJoin('units', 'detail_units.id_unit', '=', 'units.id')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
             ->where('karyawans.id', $id)
-            ->get();
+            ->first();
 
 
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $admin[0]
+            'data' => $admin
         ];
 
         return response()->json($response, Response::HTTP_OK);

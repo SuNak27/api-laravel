@@ -212,7 +212,9 @@ class PresensiController extends Controller
 
     public function karyawan($id_karyawan)
     {
-        $presensi = Presensi::where("id_karyawan", $id_karyawan)
+        $presensi = Presensi::join("shifts", "presensis.id_shift", "=", "shifts.id")
+            ->where("id_karyawan", $id_karyawan)
+            ->select("presensis.*", "shifts.nama_shift")
             ->get();
 
         $response = [

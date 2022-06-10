@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailJabatan;
 use App\Models\Jabatan;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -88,5 +90,33 @@ class JabatanController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function detailJabatan($id_karyawan)
+    {
+        $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->select('detail_jabatans.id_jabatan')
+            ->where('id_karyawan', $id_karyawan)
+            ->where('status', '1')
+            ->first();
+
+        $unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
+            ->select('detail_units.id_unit')
+            ->where('id_karyawan', $id_karyawan)
+            ->where('status', '1')
+            ->first();
+
+        $detail = [
+            'id_jabatan' => $jabatan->id_jabatan,
+            'id_unit' => $unit->id_unit
+        ];
+
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $detail
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 }

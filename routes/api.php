@@ -55,6 +55,7 @@ Route::resource('/setting_tahun', SettingTahunController::class);
 
 // Jabatan
 Route::resource('/jabatan', JabatanController::class);
+Route::get('/jabatans/{id_karyawan}', [JabatanController::class, 'detailJabatan']);
 
 // Unit
 Route::resource('/unit', UnitController::class);

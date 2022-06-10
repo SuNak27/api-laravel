@@ -202,7 +202,59 @@ class KaryawanController extends Controller
         }
 
         try {
-            $karyawan->update($request->all());
+            $data = [
+                'nama' => $request->nama,
+                'nik' => $request->nik,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'status_kawin' => $request->status_kawin,
+                'alamat' => $request->alamat,
+                'gender' => $request->gender,
+                'pendidikan' => $request->pendidikan,
+                'telepon' => $request->telepon,
+                'agama' => $request->agama,
+                'username' => $request->username,
+            ];
+
+            $karyawan->update($data);
+
+            $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
+
+            if ($checkJabatan->id_jabatan != $request->id_jabatan) {
+                $checkJabatan->update(['status' => '0']);
+                $detailJabatan = [
+                    'id_jabatan' => $request->id_jabatan,
+                    'id_karyawan' => $karyawan->id,
+                    'status' => "1",
+                ];
+                $dJabatan = DetailJabatan::create($detailJabatan);
+
+                $newKaryawan = [
+                    'id_jabatan' => $dJabatan['id'],
+                ];
+
+                $karyawan->update($newKaryawan);
+            }
+
+            $checkUnit = DetailUnit::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
+
+            if ($checkUnit->id_unit != $request->id_unit) {
+                $checkUnit->update([
+                    'status' => "0"
+                ]);
+                $detailUnit = [
+                    'id_unit' => $request->id_unit,
+                    'id_karyawan' => $karyawan->id,
+                    'status' => "1",
+                ];
+                $dUnit = DetailUnit::create($detailUnit);
+
+                $newKaryawan = [
+                    'id_unit' => $dUnit['id'],
+                ];
+
+                $karyawan->update($newKaryawan);
+            }
+
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',

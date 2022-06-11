@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,7 +43,22 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $unit = Unit::create($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $unit
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

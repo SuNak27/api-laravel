@@ -22,13 +22,8 @@ class PresensiController extends Controller
             ->join("jabatans", "detail_jabatans.id_jabatan", "=", "jabatans.id")
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
-            ->join("jadwals", function ($join) {
-                $join->on("karyawans.id", "=", "jadwals.id_karyawan")
-                    ->on("presensis.tanggal", "=", "jadwals.tanggal");
-            })
-            ->join('detail_jadwals', "jadwals.id", '=', "detail_jadwals.id_jadwal")
             ->join("shifts", "presensis.id_shift", "=", "shifts.id")
-            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift", "shifts.kode_shift")->get();
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")->get();
 
         $response = [
             'success' => true,
@@ -151,23 +146,29 @@ class PresensiController extends Controller
         try {
             $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
             $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
+            $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
 
-            if ($request->jam_keluar == null) {
-                $jam_keluar = null;
-            } else {
-                $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
+
+            // $data = [
+            //     'id_karyawan' => $request->id_karyawan,
+            //     'id_shift' => $request->id_shift,
+            //     'tanggal' => $tanggal,
+            //     'jam_masuk' => $jam_masuk,
+            //     'jam_keluar' => $jam_keluar,
+            //     'status' => $request->status,
+            //     'mode_absen' => $request->mode_absen,
+            //     'keterangan' => $request->keterangan
+            // ];
+            $data = $request->all();
+            if ($request->jam_keluar) {
+                $data['jam_keluar'] = $jam_keluar;
             }
 
-            $data = [
-                'id_karyawan' => $request->id_karyawan,
-                'id_shift' => $request->id_shift,
-                'tanggal' => $tanggal,
-                'jam_masuk' => $jam_masuk,
-                'jam_keluar' => $jam_keluar,
-                'status' => $request->status,
-                'mode_absen' => $request->mode_absen,
-                'keterangan' => $request->keterangan
-            ];
+            if ($request->jam) {
+                $data['jam_masuk'] = $jam_masuk;
+                $data['tanggal'] = $tanggal;
+                unset($data['jam']);
+            }
 
             Presensi::where('id', $id)->update($data);
 

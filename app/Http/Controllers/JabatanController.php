@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailJabatan;
 use App\Models\Jabatan;
 use App\Models\Unit;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -44,7 +45,21 @@ class JabatanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $jabatan = Jabatan::create($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $jabatan
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

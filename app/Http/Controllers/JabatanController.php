@@ -93,7 +93,22 @@ class JabatanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $jabatan = Jabatan::findOrFail($id);
+        try {
+            $jabatan->update($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $jabatan
+            ];
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

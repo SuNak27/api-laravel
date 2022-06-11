@@ -147,18 +147,6 @@ class PresensiController extends Controller
             $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
             $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
             $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
-
-
-            // $data = [
-            //     'id_karyawan' => $request->id_karyawan,
-            //     'id_shift' => $request->id_shift,
-            //     'tanggal' => $tanggal,
-            //     'jam_masuk' => $jam_masuk,
-            //     'jam_keluar' => $jam_keluar,
-            //     'status' => $request->status,
-            //     'mode_absen' => $request->mode_absen,
-            //     'keterangan' => $request->keterangan
-            // ];
             $data = $request->all();
             if ($request->jam_keluar) {
                 $data['jam_keluar'] = $jam_keluar;

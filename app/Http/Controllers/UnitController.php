@@ -92,7 +92,23 @@ class UnitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $unit = Unit::findOrFail($id);
+        try {
+            $unit->update($request->all());
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $unit
+            ];
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

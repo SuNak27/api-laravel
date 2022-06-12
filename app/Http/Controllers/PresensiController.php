@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AturanPresensi;
 use App\Models\Presensi;
+use App\Models\Shift;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -55,8 +58,8 @@ class PresensiController extends Controller
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
             'jam' => 'required',
-            'status' => 'required',
             'mode_absen' => 'required',
+            'id_shift' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -73,13 +76,32 @@ class PresensiController extends Controller
                 $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
             }
 
+            $shift = Shift::where('id', $request->id_shift)->first();
+
+            $aturan = AturanPresensi::first();
+            $masuk = new Carbon($shift->jam_masuk);
+
+            if ($masuk->diffInMinutes($jam_masuk, false) > $aturan->terlambat) {
+                if ($request->status) {
+                    $status = $request->status;
+                } else {
+                    $status = "Telat";
+                }
+            } else {
+                if ($request->status) {
+                    $status = $request->status;
+                } else {
+                    $status = "Hadir";
+                }
+            }
+
             $data = [
                 'id_karyawan' => $request->id_karyawan,
                 'id_shift' => $request->id_shift,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam_masuk,
                 'jam_keluar' => $jam_keluar,
-                'status' => $request->status,
+                'status' => $status,
                 'mode_absen' => $request->mode_absen,
                 'keterangan' => $request->keterangan
             ];

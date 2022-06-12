@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailGaji;
+use App\Models\DetailGajiKaryawan;
 use App\Models\Gaji;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -146,5 +147,26 @@ class GajiController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function detailGaji($bulan)
+    {
+        $gaji = DetailGajiKaryawan::join("detail_gajis", "detail_gaji_karyawans.id_detail_gaji", "=", "detail_gajis.id")
+            ->join("gajis", "detail_gajis.id_gaji", "=", "gajis.id")
+            ->join("jabatans", "detail_gajis.id_jabatan", "=", "jabatans.id")
+            ->join("karyawans", "detail_gaji_karyawans.id_karyawan", "=", "karyawans.id")
+            ->join("units", "gajis.id_unit", "=", "units.id")
+            ->select("karyawans.nama", "jabatans.nama_jabatan", "units.nama_unit", "detail_gajis.gaji", "detail_gaji_karyawans.denda")
+            ->where("detail_gaji_karyawans.bulan", $bulan)
+            ->sum("")
+            ->get();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $gaji
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 }

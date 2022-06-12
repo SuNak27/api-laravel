@@ -149,6 +149,25 @@ class GajiController extends Controller
         //
     }
 
+    public function gajiAll()
+    {
+        $gaji = DetailGajiKaryawan::join("karyawans", "karyawans.id", "=", "detail_gaji_karyawans.id_karyawan")
+            ->join("detail_gajis", "detail_gaji_karyawans.id_detail_gaji", "=", "detail_gajis.id")
+            ->join("gajis", "gajis.id", "=", "detail_gajis.id_gaji")
+            ->join("jabatans", "jabatans.id", "=", "detail_gajis.id_jabatan")
+            ->join("units", "units.id", "=", "gajis.id_unit")
+            ->select("detail_gaji_karyawans.id", "karyawans.nama", "jabatans.nama_jabatan", "detail_gajis.gaji", "units.nama_unit", "detail_gaji_karyawans.denda", "detail_gaji_karyawans.bulan")
+            ->get();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $gaji
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
     public function detailGaji($bulan)
     {
         $gaji = DetailGajiKaryawan::join("detail_gajis", "detail_gaji_karyawans.id_detail_gaji", "=", "detail_gajis.id")
@@ -156,9 +175,8 @@ class GajiController extends Controller
             ->join("jabatans", "detail_gajis.id_jabatan", "=", "jabatans.id")
             ->join("karyawans", "detail_gaji_karyawans.id_karyawan", "=", "karyawans.id")
             ->join("units", "gajis.id_unit", "=", "units.id")
-            ->select("karyawans.nama", "jabatans.nama_jabatan", "units.nama_unit", "detail_gajis.gaji", "detail_gaji_karyawans.denda")
+            ->select("karyawans.nama", "jabatans.nama_jabatan", "detail_gaji_karyawans.bulan", "units.nama_unit", "detail_gajis.gaji", "detail_gaji_karyawans.denda")
             ->where("detail_gaji_karyawans.bulan", $bulan)
-            ->sum("")
             ->get();
 
         $response = [

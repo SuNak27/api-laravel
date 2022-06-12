@@ -64,3 +64,4 @@ Route::resource('/unit', UnitController::class);
 // Gaji
 Route::resource('/gaji', GajiController::class);
 Route::get("/gaji/bulan/{bulan}", [GajiController::class, "detailGaji"]);
+Route::get("/gajiAll", [GajiController::class, "gajiAll"]);

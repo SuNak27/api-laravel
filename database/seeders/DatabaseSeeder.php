@@ -4,9 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Admin;
 use App\Models\AturanPresensi;
+use App\Models\DetailGaji;
+use App\Models\DetailGajiKaryawan;
 use App\Models\DetailJabatan;
 use App\Models\DetailJadwal;
 use App\Models\DetailUnit;
+use App\Models\Gaji;
 use App\Models\Jabatan;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
@@ -149,6 +152,30 @@ class DatabaseSeeder extends Seeder
             'terlambat' => '15',
             'status' => '1',
             'denda' => '10000',
+        ]);
+
+        Gaji::create([
+            'id_unit' => '1',
+        ]);
+
+        DetailGaji::create([
+            'id_gaji' => '1',
+            'id_jabatan' => '1',
+            'gaji' => '1500000',
+        ]);
+
+        DetailGajiKaryawan::create([
+            'id_detail_gaji' => '1',
+            'id_karyawan' => '1',
+            'bulan' => '2022-06',
+            'denda' => '0',
+        ]);
+
+        DetailGajiKaryawan::create([
+            'id_detail_gaji' => '1',
+            'id_karyawan' => '2',
+            'bulan' => '2022-06',
+            'denda' => '0',
         ]);
     }
 }

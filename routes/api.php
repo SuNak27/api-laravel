@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
@@ -59,3 +60,6 @@ Route::get('/jabatans/{id_karyawan}', [JabatanController::class, 'detailJabatan'
 
 // Unit
 Route::resource('/unit', UnitController::class);
+
+// Gaji
+Route::resource('/gaji', GajiController::class);

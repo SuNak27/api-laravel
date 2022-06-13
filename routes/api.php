@@ -39,6 +39,7 @@ Route::resource('/jadwal', JadwalController::class);
 Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
 Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
 Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
+Route::get("/jadwal/karyawan/{id_karyawan}/tanggal/{tanggal}", [JadwalController::class, "checkShift"]);
 
 // Aturan Presensi
 Route::resource('/aturan-presensi', SettingPresensiController::class);
@@ -65,3 +66,5 @@ Route::resource('/unit', UnitController::class);
 Route::resource('/gaji', GajiController::class);
 Route::get("/gaji/bulan/{bulan}", [GajiController::class, "detailGaji"]);
 Route::get("/gajiAll", [GajiController::class, "gajiAll"]);
+Route::get("/gaji/check/{id_unit}/{id_jabatan}", [GajiController::class, "checkGaji"]);
+Route::post("/gajiKaryawan", [GajiController::class, "gajiKaryawan"]);

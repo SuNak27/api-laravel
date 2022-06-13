@@ -281,4 +281,20 @@ class JadwalController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
+
+    public function checkShift($id_karyawan, $tanggal)
+    {
+        $jadwal = Jadwal::join('detail_jadwals', 'jadwals.id', '=', 'detail_jadwals.id_jadwal')
+            ->where('jadwals.id_karyawan', $id_karyawan)
+            ->where('jadwals.tanggal', $tanggal)
+            ->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $jadwal
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

@@ -168,6 +168,23 @@ class GajiController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
+    public function checkGaji($id_unit, $id_jabatan)
+    {
+        $gaji = Gaji::join("detail_gajis", "detail_gajis.id_gaji", "=", "gajis.id")
+            ->select("detail_gajis.*", "gajis.id_unit")
+            ->where("gajis.id_unit", $id_unit)
+            ->where("detail_gajis.id_jabatan", $id_jabatan)
+            ->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $gaji
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
     public function detailGaji($bulan)
     {
         $gaji = DetailGajiKaryawan::join("detail_gajis", "detail_gaji_karyawans.id_detail_gaji", "=", "detail_gajis.id")
@@ -186,5 +203,35 @@ class GajiController extends Controller
         ];
 
         return response()->json($response, Response::HTTP_OK);
+    }
+
+    public function gajiKaryawan(Request $request)
+    {
+        try {
+            $gaji = [
+                'id_detail_gaji' => $request->id_detail_gaji,
+                'id_karyawan' => $request->id_karyawan,
+                'bulan' => $request->bulan,
+                'denda' => 0
+            ];
+
+            $detail = DetailGajiKaryawan::create($gaji);
+
+            $response = [
+                'success' => true,
+                'message' => 'Gaji created successfully',
+                'data' => $detail
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => 'Gaji creation failed',
+                'data' => []
+            ];
+
+            return response()->json($response, Response::HTTP_BAD_REQUEST);
+        }
     }
 }

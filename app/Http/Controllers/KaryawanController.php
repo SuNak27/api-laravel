@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailGaji;
+use App\Models\DetailGajiKaryawan;
 use App\Models\DetailJabatan;
 use App\Models\DetailUnit;
+use App\Models\Gaji;
 use App\Models\Karyawan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -114,7 +117,6 @@ class KaryawanController extends Controller
                 ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
                 ->where('karyawans.id', $karyawan->id)->first();
 
-
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
@@ -123,9 +125,6 @@ class KaryawanController extends Controller
 
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
-            // return response()->json([
-            //     'message' => "Failed " . $e->errorInfo
-            // ], Response::HTTP_UNPROCESSABLE_ENTITY);
 
             $response = [
                 'success' => false,

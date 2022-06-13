@@ -26,7 +26,7 @@ class PresensiController extends Controller
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
             ->join("shifts", "presensis.id_shift", "=", "shifts.id")
-            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")->get();
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.mode_absen", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")->get();
 
         $response = [
             'success' => true,

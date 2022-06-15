@@ -144,4 +144,17 @@ class SettingTahunController extends Controller
     {
         //
     }
+
+    public function tahun_aktif()
+    {
+        $settingTahun = SettingTahun::where('status', '1')->first();
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $settingTahun
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

@@ -54,6 +54,7 @@ Route::resource('/shift', ShiftController::class);
 
 // Setting Tahun
 Route::resource('/setting_tahun', SettingTahunController::class);
+Route::get('/setting_tahuns', [SettingTahunController::class, 'tahun_aktif']);
 
 // Jabatan
 Route::resource('/jabatan', JabatanController::class);

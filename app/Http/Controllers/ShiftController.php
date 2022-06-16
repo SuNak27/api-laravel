@@ -122,7 +122,7 @@ class ShiftController extends Controller
                 'data' => $shift
             ];
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

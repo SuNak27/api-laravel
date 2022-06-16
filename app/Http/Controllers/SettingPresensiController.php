@@ -88,7 +88,7 @@ class SettingPresensiController extends Controller
                 'data' => $presensi
             ];
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

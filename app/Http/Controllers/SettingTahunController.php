@@ -59,7 +59,7 @@ class SettingTahunController extends Controller
                 'data' => $settingTahun
             ];
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,
@@ -106,8 +106,7 @@ class SettingTahunController extends Controller
             $settingTahun = SettingTahun::findOrFail($id);
 
             $check = SettingTahun::where('status', '1')->first();
-
-            if ($request->status == 1) {
+            if ($request->status == 1 && $check != null) {
                 if ($check->id != $settingTahun->id) {
                     $check->status = "0";
                     $check->save();
@@ -122,7 +121,7 @@ class SettingTahunController extends Controller
                 'data' => $settingTahun
             ];
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

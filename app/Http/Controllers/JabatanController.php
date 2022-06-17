@@ -101,7 +101,7 @@ class JabatanController extends Controller
                 'message' => 'Berhasil',
                 'data' => $jabatan
             ];
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

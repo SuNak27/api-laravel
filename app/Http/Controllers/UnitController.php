@@ -100,7 +100,7 @@ class UnitController extends Controller
                 'message' => 'Berhasil',
                 'data' => $unit
             ];
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

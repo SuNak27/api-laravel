@@ -27,7 +27,9 @@ class PresensiController extends Controller
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
             ->join("shifts", "presensis.id_shift", "=", "shifts.id")
-            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.mode_absen", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")->get();
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.mode_absen", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")
+            ->orderBy("presensis.tanggal", "desc")
+            ->get();
 
         $response = [
             'success' => true,
@@ -335,5 +337,28 @@ class PresensiController extends Controller
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function rekap()
+    {
+        $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
+            ->select("karyawans.nama", "presensis.id_karyawan")
+            ->groupBy("presensis.id_karyawan")
+            ->get();
+
+        foreach ($presensi as $key => $value) {
+            $presensi[$key]->presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
+                ->where("presensis.id_karyawan", $value->id_karyawan)
+                ->select("presensis.tanggal", "presensis.status")
+                ->get();
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 }

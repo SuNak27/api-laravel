@@ -104,7 +104,7 @@ class JadwalController extends Controller
             ];
 
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,
@@ -185,7 +185,7 @@ class JadwalController extends Controller
             'message' => 'Berhasil',
         ];
 
-        return response()->json($response, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**

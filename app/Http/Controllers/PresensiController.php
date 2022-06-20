@@ -29,7 +29,9 @@ class PresensiController extends Controller
             ->join("detail_units", "karyawans.id_unit", "=", "detail_units.id")
             ->join("units", "detail_units.id_unit", "=", "units.id")
             ->join("shifts", "presensis.id_shift", "=", "shifts.id")
-            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.mode_absen", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")->get();
+            ->select("presensis.id", "karyawans.id as id_karyawan", "karyawans.nama", "presensis.id_shift as id_shift", "jabatans.nama_jabatan", "units.nama_unit", "presensis.tanggal", "presensis.jam_masuk", "presensis.mode_absen", "presensis.jam_keluar", "presensis.status", "presensis.keterangan", "shifts.nama_shift")
+            ->orderBy("presensis.tanggal", "desc")
+            ->get();
 
         $response = [
             'success' => true,
@@ -341,6 +343,7 @@ class PresensiController extends Controller
 
     public function rekap()
     {
+<<<<<<< HEAD
         $presensi = Presensi::join('karyawans', 'presensis.id_karyawan', '=', 'karyawans.id')
             ->join('shifts', 'presensis.id_shift', '=', 'shifts.id')
             ->select('karyawans.nama', 'presensis.id_karyawan', 'presensis.id_shift', 'shifts.nama_shift')
@@ -360,6 +363,18 @@ class PresensiController extends Controller
                 // $presensi[$key] = $value2->tanggal;
                 $presensi[$key]->detail = $value2->status;
             }
+=======
+        $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
+            ->select("karyawans.nama", "presensis.id_karyawan")
+            ->groupBy("presensis.id_karyawan")
+            ->get();
+
+        foreach ($presensi as $key => $value) {
+            $presensi[$key]->presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
+                ->where("presensis.id_karyawan", $value->id_karyawan)
+                ->select("presensis.tanggal", "presensis.status")
+                ->get();
+>>>>>>> 1481d4a11f5590c3022503d6e0f902b220dd806a
         }
 
         $response = [

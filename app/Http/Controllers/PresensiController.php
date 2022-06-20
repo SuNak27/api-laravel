@@ -7,8 +7,10 @@ use App\Models\Jadwal;
 use App\Models\Presensi;
 use App\Models\Shift;
 use Carbon\Carbon;
+use Dotenv\Parser\Value;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -335,5 +337,37 @@ class PresensiController extends Controller
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function rekap()
+    {
+        $presensi = Presensi::join('karyawans', 'presensis.id_karyawan', '=', 'karyawans.id')
+            ->join('shifts', 'presensis.id_shift', '=', 'shifts.id')
+            ->select('karyawans.nama', 'presensis.id_karyawan', 'presensis.id_shift', 'shifts.nama_shift')
+            ->groupBy('presensis.id_karyawan')
+            ->orderBy('presensis.id_karyawan', 'asc')
+            ->get();
+
+
+        foreach ($presensi as $key => $value) {
+            $shift = Presensi::join('shifts', 'presensis.id_shift', '=', 'shifts.id')
+                ->select('presensis.tanggal', 'presensis.status')
+                ->where('presensis.id_karyawan', $value->id_karyawan)
+                ->where('presensis.id_shift', $value->id_shift)
+                ->get();
+
+            foreach ($shift as $key2 => $value2) {
+                // $presensi[$key] = $value2->tanggal;
+                $presensi[$key]->detail = $value2->status;
+            }
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $presensi
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 }

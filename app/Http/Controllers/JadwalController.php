@@ -204,7 +204,7 @@ class JadwalController extends Controller
             ->where('jadwals.bulan', $bulan)
             ->select('jadwals.tanggal', 'jadwals.id', 'setting_tahuns.tahun as tahun')
             ->orderBy('jadwals.tanggal', 'asc')
-            ->paginate(7);
+            ->get();
 
         $result = [];
         foreach ($jadwal as $j) {

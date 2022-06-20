@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailJadwal;
 use App\Models\Jadwal;
-use App\Models\Karyawan;
-use App\Models\Shift;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class JadwalController extends Controller
@@ -207,7 +204,7 @@ class JadwalController extends Controller
             ->where('jadwals.bulan', $bulan)
             ->select('jadwals.tanggal', 'jadwals.id', 'setting_tahuns.tahun as tahun')
             ->orderBy('jadwals.tanggal', 'asc')
-            ->get();
+            ->paginate(7);
 
         $result = [];
         foreach ($jadwal as $j) {
@@ -231,7 +228,7 @@ class JadwalController extends Controller
             'success' => true,
             'message' => 'Berhasil',
             'karyawan' => $karyawan,
-            'data' => $jadwal
+            'detail' => $jadwal
         ];
 
         return response()->json($response, Response::HTTP_OK);

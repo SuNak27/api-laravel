@@ -330,8 +330,8 @@ class KaryawanController extends Controller
     {
         $jabatan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->select("jabatans.nama_jabatan as name", DB::raw('count(karyawans.id_jabatan) as value'))
-            ->groupBy('karyawans.id_jabatan')
+            ->select("jabatans.nama_jabatan as name", DB::raw('count(jabatans.id) as value'))
+            ->groupBy('jabatans.id')
             ->get();
 
         $gender = Karyawan::select("gender as name", DB::raw('count(gender) as value'))

@@ -10,6 +10,7 @@ use App\Models\Gaji;
 use App\Models\Karyawan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -323,5 +324,27 @@ class KaryawanController extends Controller
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function statistic()
+    {
+        $jabatan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->select("jabatans.nama_jabatan as name", DB::raw('count(karyawans.id_jabatan) as value'))
+            ->groupBy('karyawans.id_jabatan')
+            ->get();
+
+        $gender = Karyawan::select("gender as name", DB::raw('count(gender) as value'))
+            ->groupBy('gender')
+            ->get();
+
+        $response = [
+            "success" => true,
+            "message" => "Berhasil",
+            "jumlah_jabatan" => $jabatan,
+            "jumlah_karyawan" => $gender
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 }

@@ -33,6 +33,7 @@ Route::get('/admin', [AdminController::class, 'index']);
 // Karyawan
 Route::resource('/karyawan', KaryawanController::class);
 Route::post('/login/karyawan', [KaryawanController::class, 'login']);
+Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);

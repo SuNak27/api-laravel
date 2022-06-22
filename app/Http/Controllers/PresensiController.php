@@ -343,27 +343,6 @@ class PresensiController extends Controller
 
     public function rekap()
     {
-<<<<<<< HEAD
-        $presensi = Presensi::join('karyawans', 'presensis.id_karyawan', '=', 'karyawans.id')
-            ->join('shifts', 'presensis.id_shift', '=', 'shifts.id')
-            ->select('karyawans.nama', 'presensis.id_karyawan', 'presensis.id_shift', 'shifts.nama_shift')
-            ->groupBy('presensis.id_karyawan')
-            ->orderBy('presensis.id_karyawan', 'asc')
-            ->get();
-
-
-        foreach ($presensi as $key => $value) {
-            $shift = Presensi::join('shifts', 'presensis.id_shift', '=', 'shifts.id')
-                ->select('presensis.tanggal', 'presensis.status')
-                ->where('presensis.id_karyawan', $value->id_karyawan)
-                ->where('presensis.id_shift', $value->id_shift)
-                ->get();
-
-            foreach ($shift as $key2 => $value2) {
-                // $presensi[$key] = $value2->tanggal;
-                $presensi[$key]->detail = $value2->status;
-            }
-=======
         $presensi = Presensi::join("karyawans", "presensis.id_karyawan", "=", "karyawans.id")
             ->select("karyawans.nama", "presensis.id_karyawan")
             ->groupBy("presensis.id_karyawan")
@@ -374,7 +353,6 @@ class PresensiController extends Controller
                 ->where("presensis.id_karyawan", $value->id_karyawan)
                 ->select("presensis.tanggal", "presensis.status")
                 ->get();
->>>>>>> 1481d4a11f5590c3022503d6e0f902b220dd806a
         }
 
         $response = [

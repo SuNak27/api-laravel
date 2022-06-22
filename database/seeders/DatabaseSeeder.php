@@ -95,6 +95,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Karyawan::create([
+            'nama' => "Siti Maimunah",
+            'nik' => "123456789",
+            'id_jabatan' => 1,
+            'id_unit' => 1,
+            'tanggal_lahir' => "2002-03-07",
+            'status_kawin' => "Belum Kawin",
+            'alamat' => "Paiton",
+            'gender' => 'P',
+            'pendidikan' => 'S1',
+            'agama' => 'Islam',
+            'telepon' => '081234567890',
+            'username' => 'munah',
+            'password' => Hash::make('123456')
+        ]);
+
+        Karyawan::create([
             'nama' => "Ahmad Dani",
             'nik' => "123456789",
             'id_jabatan' => 1,

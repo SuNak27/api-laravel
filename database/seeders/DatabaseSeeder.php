@@ -66,6 +66,11 @@ class DatabaseSeeder extends Seeder
             'id_jabatan' => 1,
             'status' => '1',
         ]);
+        DetailJabatan::create([
+            'id_karyawan' => 3,
+            'id_jabatan' => 1,
+            'status' => '1',
+        ]);
 
         DetailUnit::create([
             'id_karyawan' => 1,
@@ -74,6 +79,11 @@ class DatabaseSeeder extends Seeder
         ]);
         DetailUnit::create([
             'id_karyawan' => 2,
+            'id_unit' => 1,
+            'status' => '1',
+        ]);
+        DetailUnit::create([
+            'id_karyawan' => 3,
             'id_unit' => 1,
             'status' => '1',
         ]);
@@ -97,8 +107,8 @@ class DatabaseSeeder extends Seeder
         Karyawan::create([
             'nama' => "Siti Maimunah",
             'nik' => "123456789",
-            'id_jabatan' => 1,
-            'id_unit' => 1,
+            'id_jabatan' => 2,
+            'id_unit' => 2,
             'tanggal_lahir' => "2002-03-07",
             'status_kawin' => "Belum Kawin",
             'alamat' => "Paiton",
@@ -113,8 +123,8 @@ class DatabaseSeeder extends Seeder
         Karyawan::create([
             'nama' => "Ahmad Dani",
             'nik' => "123456789",
-            'id_jabatan' => 1,
-            'id_unit' => 1,
+            'id_jabatan' => 3,
+            'id_unit' => 3,
             'tanggal_lahir' => "2002-02-02",
             'status_kawin' => "Belum Kawin",
             'alamat' => "Jl. Raya",

@@ -7,12 +7,15 @@ use App\Models\DetailGajiKaryawan;
 use App\Models\DetailJabatan;
 use App\Models\DetailUnit;
 use App\Models\Gaji;
+use App\Models\Jadwal;
 use App\Models\Karyawan;
+use App\Models\Presensi;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 
 class KaryawanController extends Controller
@@ -338,11 +341,22 @@ class KaryawanController extends Controller
             ->groupBy('gender')
             ->get();
 
+        $tanggal = date("Y-m-d");
+
+        $jadwal = Jadwal::select(DB::raw('count(jadwals.id_karyawan) as jadwal_hari_ini'))->where('jadwals.tanggal', $tanggal)->first();
+
+        $presensi = Presensi::select(DB::raw('count(id) as hadir_hari_ini'))->where('tanggal', $tanggal)->first();
+
+        $jumlah_jadwal = new stdClass();
+        $jumlah_jadwal->jadwal = $jadwal->jadwal_hari_ini;
+        $jumlah_jadwal->hadir = $presensi->hadir_hari_ini;
+
         $response = [
             "success" => true,
             "message" => "Berhasil",
             "jumlah_jabatan" => $jabatan,
-            "jumlah_karyawan" => $gender
+            "jumlah_karyawan" => $gender,
+            "jumlah_jadwal" => $jumlah_jadwal
         ];
 
         return response()->json($response, Response::HTTP_OK);

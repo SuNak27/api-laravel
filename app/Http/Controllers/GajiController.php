@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\DetailGaji;
 use App\Models\DetailGajiKaryawan;
 use App\Models\Gaji;
+use App\Models\Jabatan;
+use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -170,19 +172,39 @@ class GajiController extends Controller
 
     public function checkGaji($id_unit, $id_jabatan)
     {
-        $gaji = Gaji::join("detail_gajis", "detail_gajis.id_gaji", "=", "gajis.id")
-            ->select("detail_gajis.*", "gajis.id_unit")
-            ->where("gajis.id_unit", $id_unit)
-            ->where("detail_gajis.id_jabatan", $id_jabatan)
+        $id_unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
+            ->select('units.id', 'units.nama_unit')
+            ->where('detail_units.id', $id_unit)
             ->first();
 
-        $response = [
-            'success' => true,
-            'message' => 'Berhasil',
-            'data' => $gaji
-        ];
+        $id_jabatan = Jabatan::join('detail_jabatans', 'jabatans.id', '=', 'detail_jabatans.id_jabatan')
+            ->select('jabatans.id', 'jabatans.nama_jabatan')
+            ->where('detail_jabatans.id', $id_jabatan)
+            ->first();
 
-        return response()->json($response, Response::HTTP_OK);
+        $gaji = Gaji::join("detail_gajis", "detail_gajis.id_gaji", "=", "gajis.id")
+            ->select("detail_gajis.*", "gajis.id_unit")
+            ->where("gajis.id_unit", $id_unit->id)
+            ->where("detail_gajis.id_jabatan", $id_jabatan->id)
+            ->first();
+
+
+        if ($gaji != null) {
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $gaji
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'Tidak ada data gaji',
+            ];
+
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     public function detailGaji($bulan)

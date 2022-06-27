@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -37,35 +39,57 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password,
-        ];
+        $validate = Validator::make($request->all(), [
+            'email' => 'required',
+            'password' => 'required',
+        ]);
 
-        // dd($credentials);
-        if ($credentials['email'] == null && $credentials['password']) {
-            return response()->json(["message" => "Gagal"]);
+        if ($validate->fails()) {
+            $response = [
+                "satus" => 'Error',
+                "message" => "Validate Error",
+                "error" => $validate->errors(),
+                "content" => null
+            ];
+
+            return response()->json($response, 200);
+        } else {
+            $credentials = request(['email', 'password']);
+
+            if (!Auth::attempt($credentials)) {
+                // return Auth::attempt($credentials);
+                $response = [
+                    'status' => 'error',
+                    'message' => "Unathorized",
+                ];
+
+                return response()->json($response, 401);
+            }
+            $user = User::where('email', $request->email)->firstOrFail();
+            if (!Hash::check($request->password, $user->password)) {
+                throw new Exception('Error in Login');
+            }
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return $user;
+            return response()
+                ->json(['message' => 'Hi ' . $user->name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
         }
-
-        $user = User::where('email', $request->email)->firstOrFail();
-
-        if (!Hash::check($user->password, $request->password)) {
-            dd($user);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()
-            ->json(['message' => 'Hi ' . $user->name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
     }
 
     // method for user logout and delete token
-    public function logout()
+    public function logout(Request $request)
     {
-        // auth()->user()->tokens()->delete();
+        $user = $request->user();
 
-        // return [
-        //     'message' => 'You have successfully logged out and the token was successfully deleted'
-        // ];
+        return $user;
+
+        // return auth()->user()->auth_token();
+        $response = [
+            'status' => 'success',
+            'message' => 'Logout success',
+        ];
+
+        // return response()->json($response, 200);
     }
 }

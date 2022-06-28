@@ -25,19 +25,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware(['auth:api'])->group(function () {
-//     Route::resource('/karyawan', KaryawanController::class);
-// });
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::resource('/karyawan', KaryawanController::class);
-    Route::resource('/jadwal', JadwalController::class);
+    // Route::resource('/karyawan', KaryawanController::class);
+    // Route::resource('/jadwal', JadwalController::class);
     Route::post('logout', [AuthController::class, 'logout']);
 });
-
-// Route::middleware(['auth:sanctum'])->group(function () {
-//     Route::resource('karyawan', BookController::class);
-// });
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -49,12 +41,12 @@ Route::controller(AuthController::class)->group(function () {
 Route::get('/admin', [AdminController::class, 'index']);
 
 // Karyawan
-// Route::resource('/karyawan', KaryawanController::class);
+Route::resource('/karyawan', KaryawanController::class);
 Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
 
 // Jadwal
-// Route::resource('/jadwal', JadwalController::class);
+Route::resource('/jadwal', JadwalController::class);
 Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
 Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
 Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);

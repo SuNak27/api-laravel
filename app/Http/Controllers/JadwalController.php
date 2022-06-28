@@ -187,6 +187,11 @@ class JadwalController extends Controller
         //
     }
 
+    public function JadwalUnit($id_unit)
+    {
+
+    }
+
     public function karyawan($id_karyawan, $bulan, $id_tahun)
     {
         $jadwal = Jadwal::join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')

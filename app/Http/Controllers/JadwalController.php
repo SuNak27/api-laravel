@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailJadwal;
+use App\Models\DetailUnit;
 use App\Models\Jadwal;
+use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,27 +20,16 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->join('units', 'detail_units.id_unit', '=', 'units.id')
-            ->join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
-            ->select('jadwals.tanggal', 'jadwals.id', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun')
+        $unit = DetailUnit::join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->select('detail_units.id_unit as id_unit', 'units.nama_unit', DB::raw('count(id_karyawan) as jumlah_karyawan'))
+            ->where('status', '1')
+            ->groupBy('id_unit')
             ->get();
-
-        $result = [];
-        foreach ($jadwal as $j) {
-
-            $j["detail"] = DB::table('detail_jadwals')->leftJoin("shifts", "detail_jadwals.id_shift", "=", "shifts.id")->select("shifts.id", 'shifts.kode_shift', "shifts.nama_shift", "shifts.jam_masuk", "shifts.jam_keluar")->where("id_jadwal", $j['id'])->get();
-
-            array_push($result, $j);
-        };
 
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $jadwal
+            'data' => $unit
         ];
 
         return response()->json($response, Response::HTTP_OK);

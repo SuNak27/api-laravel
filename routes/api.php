@@ -47,6 +47,7 @@ Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);
+Route::get('/jadwal/unit/{id_unit}', [JadwalController::class, 'jadwalUnit']);
 Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
 Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
 Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);

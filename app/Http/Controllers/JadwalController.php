@@ -187,8 +187,34 @@ class JadwalController extends Controller
         //
     }
 
-    public function JadwalUnit($id_unit)
+    public function jadwalUnit($id_unit)
     {
+        $karyawan = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->where('units.id', $id_unit)
+            ->where('detail_units.status', '1')
+            ->whereMonth('jadwals.tanggal', '=', date('m'))
+            ->select('karyawans.nama as nama_karyawan', 'units.nama_unit', DB::raw('count(tanggal) as jumlah_jadwal'))
+            ->groupBy('jadwals.id_karyawan')
+            ->get();
+
+
+        // $result = [];
+        // foreach ($jadwal as $j) {
+
+        //     $j["detail"] = DB::table('detail_jadwals')->leftJoin("shifts", "detail_jadwals.id_shift", "=", "shifts.id")->select("shifts.id", 'shifts.kode_shift', "shifts.nama_shift", "shifts.jam_masuk", "shifts.jam_keluar")->where("id_jadwal", $j['id'])->get();
+
+        //     array_push($result, $j);
+        // }
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $karyawan
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     public function karyawan($id_karyawan, $bulan, $id_tahun)

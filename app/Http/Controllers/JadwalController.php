@@ -33,9 +33,7 @@ class JadwalController extends Controller
             $j["detail"] = DB::table('detail_jadwals')->leftJoin("shifts", "detail_jadwals.id_shift", "=", "shifts.id")->select("shifts.id", 'shifts.kode_shift', "shifts.nama_shift", "shifts.jam_masuk", "shifts.jam_keluar")->where("id_jadwal", $j['id'])->get();
 
             array_push($result, $j);
-        }
-
-        dd
+        };
 
         $response = [
             'success' => true,

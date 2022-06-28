@@ -35,6 +35,8 @@ class JadwalController extends Controller
             array_push($result, $j);
         }
 
+        dd
+
         $response = [
             'success' => true,
             'message' => 'Berhasil',

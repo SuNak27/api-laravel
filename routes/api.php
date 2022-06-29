@@ -44,6 +44,7 @@ Route::get('/admin', [AdminController::class, 'index']);
 Route::resource('/karyawan', KaryawanController::class);
 Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
+Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);

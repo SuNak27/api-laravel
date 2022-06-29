@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailJadwal;
 use App\Models\DetailUnit;
 use App\Models\Jadwal;
+use App\Models\Unit;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\QueryException;
@@ -55,27 +56,33 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         try {
-
-
             $start = Carbon::parse($request->tanggal)->startOfMonth()->format('Y-m-d');
             $end = Carbon::parse($request->tanggal)->endOfMonth()->format('Y-m-d');
-
             $period = CarbonPeriod::create($start, $end);
-
-            // Iterate over the period
             $dates = [];
             foreach ($period as $date) {
-                array_push($dates, $date->format('Y-m-d'));
+                $jadwal = Jadwal::create([
+                    'id_karyawan' => $request->id_karyawan,
+                    'id_tahun' => $request->id_tahun,
+                    'tanggal' => $date->format('Y-m-d')
+                ]);
+                $id_jadwal = $jadwal->id;
+
+                foreach ($request->id_shift as $shift) {
+                    DetailJadwal::create([
+                        'id_jadwal' => $id_jadwal,
+                        'id_shift' => $shift
+                    ]);
+                }
             }
 
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $dates
             ];
 
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,
@@ -180,23 +187,35 @@ class JadwalController extends Controller
             ->select('units.id', 'units.nama_unit')
             ->first();
 
+        $unitNull = Unit::where("id", $id_unit)->select('id', 'nama_unit')->first();
+
         $karyawan = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
             ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
             ->where('units.id', $id_unit)
             ->where('detail_units.status', '1')
-            ->select('karyawans.nama as nama_karyawan', DB::raw('count(tanggal) as jumlah_jadwal'), DB::raw("DATE_FORMAT(jadwals.tanggal, '%Y-%m') new_date"),  DB::raw('YEAR(jadwals.tanggal) year, MONTH(jadwals.tanggal) month'))
+            ->select('karyawans.id as id_karyawan', 'karyawans.nama as nama_karyawan', DB::raw('count(tanggal) as jumlah_jadwal'), DB::raw("DATE_FORMAT(jadwals.tanggal, '%Y-%m') new_date"),  DB::raw('YEAR(jadwals.tanggal) year, MONTH(jadwals.tanggal) month'), 'jadwals.id_tahun')
             ->groupBy('jadwals.id_karyawan', 'year', 'month')
             ->orderBy('jadwals.tanggal', 'DESC')
             ->get();
 
-        $response = [
-            'success' => true,
-            'message' => 'Berhasil',
-            'id_unit' => $unit->id,
-            'unit' => $unit->nama_unit,
-            'data' => $karyawan
-        ];
+        if ($unit != null) {
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'id_unit' => $unit->id,
+                'unit' => $unit->nama_unit,
+                'data' => $karyawan
+            ];
+        } else {
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'id_unit' => $unitNull->id,
+                'unit' => $unitNull->nama_unit,
+                'data' => $karyawan
+            ];
+        }
 
         return response()->json($response, Response::HTTP_OK);
     }
@@ -206,7 +225,7 @@ class JadwalController extends Controller
         $jadwal = Jadwal::join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
             ->where('jadwals.id_karyawan', $id_karyawan)
             ->where('jadwals.id_tahun', $id_tahun)
-            ->where('jadwals.bulan', $bulan)
+            ->where(DB::raw("MONTH(jadwals.tanggal)"), $bulan)
             ->select('jadwals.tanggal', 'jadwals.id', 'setting_tahuns.tahun as tahun')
             ->orderBy('jadwals.tanggal', 'asc')
             ->get();
@@ -218,12 +237,12 @@ class JadwalController extends Controller
         }
 
         $karyawan = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('detail_jabatans', 'jadwals.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('detail_units', 'jadwals.id_unit', '=', 'detail_units.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
             ->where('jadwals.id_karyawan', $id_karyawan)
-            ->where('jadwals.bulan', $bulan)
+            ->where(DB::raw("MONTH(jadwals.tanggal)"), $bulan)
             ->where('jadwals.id_tahun', $id_tahun)
             ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit')
             ->groupBy('jadwals.id_karyawan')

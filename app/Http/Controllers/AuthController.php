@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,9 +39,9 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validate = Validator::make([
+        $validate = Validator::make($request->all(), [
             'email' => 'required',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         if ($validate->fails()) {
@@ -56,33 +56,39 @@ class AuthController extends Controller
             $credentials = request(['email', 'password']);
 
             if (!Auth::attempt($credentials)) {
+                // return Auth::attempt($credentials);
                 $response = [
-                    'success' => false,
-                    'message' => 'Unauthorized',
+                    'status' => 'error',
+                    'message' => "Unathorized",
                 ];
 
-                return response()->json($response, Response::HTTP_UNAUTHORIZED);
+                return response()->json($response, 401);
             }
-
             $user = User::where('email', $request->email)->firstOrFail();
-
-            if (!Hash::check($request->password, $user->password, [])) {
-                throw new Exception('Error in login');
+            if (!Hash::check($request->password, $user->password)) {
+                throw new Exception('Error in Login');
             }
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            return $user;
             return response()
                 ->json(['message' => 'Hi ' . $user->name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
         }
     }
 
     // method for user logout and delete token
-    public function logout()
+    public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
+        $user = $request->user();
 
-        return [
-            'message' => 'You have successfully logged out and the token was successfully deleted'
+        return $user;
+
+        // return auth()->user()->auth_token();
+        $response = [
+            'status' => 'success',
+            'message' => 'Logout success',
         ];
+
+        // return response()->json($response, 200);
     }
 }

@@ -361,4 +361,20 @@ class KaryawanController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
+
+    public function karyawanUnit($id_unit)
+    {
+        $karyawan = Karyawan::join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->select('karyawans.id as id_karyawan', 'karyawans.nama', 'units.nama_unit')
+            ->where('units.id', $id_unit)->get();
+
+        $response = [
+            "success" => true,
+            "message" => "Berhasil",
+            "data" => $karyawan
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 }

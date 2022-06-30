@@ -17,6 +17,7 @@ use App\Models\Presensi;
 use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -202,6 +203,12 @@ class DatabaseSeeder extends Seeder
             'id_karyawan' => '2',
             'bulan' => '2022-06',
             'denda' => '0',
+        ]);
+
+        User::create([
+            'name' => 'Alfad Sabil Haq',
+            'email' => 'admin@ok.com',
+            'password' => Hash::make('123456')
         ]);
     }
 }

@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailGaji;
-use App\Models\DetailGajiKaryawan;
 use App\Models\DetailJabatan;
 use App\Models\DetailUnit;
-use App\Models\Gaji;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
 use App\Models\Presensi;
@@ -14,6 +11,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,7 +70,8 @@ class KaryawanController extends Controller
             'alamat' => 'required',
             'gender' => 'required',
             'pendidikan' => 'required',
-            'telepon' => 'required|numeric'
+            'telepon' => 'required|numeric',
+            'image'  => 'required|mimes:png,jpg,jpeg,gif|max:2305',
         ]);
 
         if ($validator->fails()) {
@@ -80,6 +79,7 @@ class KaryawanController extends Controller
         }
 
         try {
+
             $data = [
                 'nama' => $request->nama,
                 'nik' => $request->nik,
@@ -92,6 +92,10 @@ class KaryawanController extends Controller
                 'agama' => $request->agama,
                 'username' => $request->username,
             ];
+
+            if ($request->file('image')) {
+                $data['image'] = $request->file('image')->store('karyawans', 'public');
+            }
 
             $karyawan = Karyawan::create($data);
             $detailJabatan = [
@@ -187,6 +191,7 @@ class KaryawanController extends Controller
     public function update(Request $request, $id)
     {
         $karyawan = Karyawan::findOrFail($id);
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'nama' => 'required',
             'nik' => 'required|numeric',
@@ -197,7 +202,8 @@ class KaryawanController extends Controller
             'alamat' => 'required',
             'gender' => 'required',
             'pendidikan' => 'required',
-            'telepon' => 'required|numeric'
+            'telepon' => 'required|numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -205,6 +211,7 @@ class KaryawanController extends Controller
         }
 
         try {
+            $oldImage = $karyawan->image;
             $data = [
                 'nama' => $request->nama,
                 'nik' => $request->nik,
@@ -217,6 +224,15 @@ class KaryawanController extends Controller
                 'agama' => $request->agama,
                 'username' => $request->username,
             ];
+
+            if ($request->file('image')) {
+                if ($request->Image) {
+                    if ($oldImage != "") {
+                        Storage::delete($oldImage);
+                    }
+                }
+                $data['image'] = $request->file('image')->store('karyawans', 'public');
+            }
 
             $karyawan->update($data);
 

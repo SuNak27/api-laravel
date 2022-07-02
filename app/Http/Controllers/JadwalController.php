@@ -244,7 +244,7 @@ class JadwalController extends Controller
             ->where('jadwals.id_karyawan', $id_karyawan)
             ->where(DB::raw("MONTH(jadwals.tanggal)"), $bulan)
             ->where('jadwals.id_tahun', $id_tahun)
-            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit')
+            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'karyawans.image', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit')
             ->groupBy('jadwals.id_karyawan')
             ->first();
 

@@ -10,6 +10,7 @@ use App\Models\Presensi;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +26,7 @@ class KaryawanController extends Controller
      */
     public function index()
     {
-        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
@@ -36,7 +37,7 @@ class KaryawanController extends Controller
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $admin
+            'data' => $karyawan
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -202,8 +203,7 @@ class KaryawanController extends Controller
             'alamat' => 'required',
             'gender' => 'required',
             'pendidikan' => 'required',
-            'telepon' => 'required|numeric',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'telepon' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -226,11 +226,11 @@ class KaryawanController extends Controller
             ];
 
             if ($request->file('image')) {
-                // if ($request->Image) {
-                //     if ($oldImage != "") {
-                //         Storage::delete($oldImage);
-                //     }
-                // }
+                if ($request->image) {
+                    if ($oldImage != "") {
+                        Storage::delete('public/' . $oldImage);
+                    }
+                }
                 $data['image'] = $request->file('image')->store('karyawans', 'public');
             }
 

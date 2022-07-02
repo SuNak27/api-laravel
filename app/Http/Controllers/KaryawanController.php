@@ -226,14 +226,16 @@ class KaryawanController extends Controller
             ];
 
             if ($request->file('image')) {
-                if ($request->Image) {
-                    if ($oldImage != "") {
-                        Storage::delete($oldImage);
-                    }
-                }
+                // if ($request->Image) {
+                //     if ($oldImage != "") {
+                //         Storage::delete($oldImage);
+                //     }
+                // }
                 $data['image'] = $request->file('image')->store('karyawans', 'public');
             }
 
+
+            // dd($oldImage);
             $karyawan->update($data);
 
             $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id)->where('status', '1')->first();

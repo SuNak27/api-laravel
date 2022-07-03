@@ -25,11 +25,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::resource('/karyawan', KaryawanController::class);
+Route::post('/upload-content', [KaryawanController::class, 'uploadContent']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/admin', [AdminController::class, 'index']);
 
     // Karyawan
-    Route::resource('/karyawan', KaryawanController::class);
+    // Route::resource('/karyawan', KaryawanController::class);
     Route::post('/login/karyawan', [KaryawanController::class, 'login']);
     Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
     Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);

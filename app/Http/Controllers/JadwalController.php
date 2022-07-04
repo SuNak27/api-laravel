@@ -58,7 +58,12 @@ class JadwalController extends Controller
         try {
             $start = Carbon::parse($request->tanggal)->startOfMonth()->format('Y-m-d');
             $end = Carbon::parse($request->tanggal)->endOfMonth()->format('Y-m-d');
-            $period = CarbonPeriod::create($start, $end);
+
+            if ($request->tanggal_mulai) {
+                $period = CarbonPeriod::create($request->tanggal_mulai, $request->tanggal_akhir);
+            } else {
+                $period = CarbonPeriod::create($start, $end);
+            }
             $dates = [];
             foreach ($period as $date) {
                 $jadwal = Jadwal::create([

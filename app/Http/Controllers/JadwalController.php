@@ -66,12 +66,19 @@ class JadwalController extends Controller
             }
             $dates = [];
             foreach ($period as $date) {
-                $jadwal = Jadwal::create([
-                    'id_karyawan' => $request->id_karyawan,
-                    'id_tahun' => $request->id_tahun,
-                    'tanggal' => $date->format('Y-m-d')
-                ]);
-                $id_jadwal = $jadwal->id;
+                $check = Jadwal::where('id_karyawan', $request->id_karyawan)->where('tanggal', $date->format('Y-m-d'))->first();
+
+
+                if ($check == null) {
+                    $jadwal = Jadwal::create([
+                        'id_karyawan' => $request->id_karyawan,
+                        'id_tahun' => $request->id_tahun,
+                        'tanggal' => $date->format('Y-m-d')
+                    ]);
+                    $id_jadwal = $jadwal->id;
+                } else {
+                    $id_jadwal = $check->id;
+                }
 
                 foreach ($request->id_shift as $shift) {
                     DetailJadwal::create([

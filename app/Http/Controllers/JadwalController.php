@@ -56,8 +56,24 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         try {
-            $start = Carbon::parse($request->tanggal)->startOfMonth()->format('Y-m-d');
-            $end = Carbon::parse($request->tanggal)->endOfMonth()->format('Y-m-d');
+
+            $dateFormat = 'Y-m-d';
+            $dateInput = $request->tanggal;
+
+            $time = strtotime($dateInput);
+            $testDate = date($dateFormat, $time);
+
+            if ($dateInput == $testDate) {
+                // return 'Valid format' . PHP_EOL;
+                $start = Carbon::parse($request->tanggal)->format('Y-m-d');
+                $end = Carbon::parse($request->tanggal)->format('Y-m-d');
+                // return 'Valid format' . $start;
+            } else {
+                // return 'Invalid format' . PHP_EOL;
+                $start = Carbon::parse($request->tanggal)->startOfMonth()->format('Y-m-d');
+                $end = Carbon::parse($request->tanggal)->endOfMonth()->format('Y-m-d');
+                // return  'Invalid format' . $start;
+            }
 
             if ($request->tanggal_mulai) {
                 $period = CarbonPeriod::create($request->tanggal_mulai, $request->tanggal_akhir);
@@ -81,10 +97,13 @@ class JadwalController extends Controller
                 }
 
                 foreach ($request->id_shift as $shift) {
-                    DetailJadwal::create([
-                        'id_jadwal' => $id_jadwal,
-                        'id_shift' => $shift
-                    ]);
+                    $checkDetail = DetailJadwal::where('id_jadwal', $id_jadwal)->where('id_shift', $shift)->first();
+                    if (!$checkDetail) {
+                        DetailJadwal::create([
+                            'id_jadwal' => $id_jadwal,
+                            'id_shift' => $shift,
+                        ]);
+                    }
                 }
             }
 
@@ -256,7 +275,7 @@ class JadwalController extends Controller
             ->where('jadwals.id_karyawan', $id_karyawan)
             ->where(DB::raw("MONTH(jadwals.tanggal)"), $bulan)
             ->where('jadwals.id_tahun', $id_tahun)
-            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'karyawans.image', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit')
+            ->select('karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'karyawans.image', 'detail_jabatans.status as status_jabatan', 'detail_units.status as status_unit', DB::raw("MONTH(jadwals.tanggal) as bulan"))
             ->groupBy('jadwals.id_karyawan')
             ->first();
 

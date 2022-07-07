@@ -149,4 +149,36 @@ class JabatanController extends Controller
         ];
         return response()->json($response, Response::HTTP_OK);
     }
+
+    public function downloadJabatan()
+    {
+        $fileName = 'jabatan.csv';
+        $jabatan = Jabatan::all();
+
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array('ID', 'Nama Jabatan');
+
+        $callback = function () use ($jabatan, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($jabatan as $task) {
+                $row['ID']  = $task->id;
+                $row['Nama Jabatan']  = $task->nama_jabatan;
+
+                fputcsv($file, array($row['ID'], $row['Nama Jabatan']));
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

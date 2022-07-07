@@ -281,7 +281,7 @@ class KaryawanController extends Controller
                 'data' => $karyawan
             ];
 
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -395,7 +395,7 @@ class KaryawanController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-    public function uploadContent(Request $request)
+    public function uploadKaryawan(Request $request)
     {
         $file = $request->file('uploaded_file');
         if ($file) {
@@ -447,7 +447,6 @@ class KaryawanController extends Controller
                         'username' => $importData[9],
                     ];
                     Karyawan::create($data);
-                    //Send Email
                     DB::commit();
                 } catch (\Exception $e) {
                     //throw $th;
@@ -474,5 +473,17 @@ class KaryawanController extends Controller
         } else {
             throw new \Exception('Invalid file extension', Response::HTTP_UNSUPPORTED_MEDIA_TYPE); //415 error
         }
+    }
+
+    public function downloadImportKaryawan()
+    {
+        //PDF file is stored under project/public/download/info.pdf
+        $file = public_path() . "/storage/excel/karyawan.csv";
+
+        $headers = array(
+            'Content-Type: text/csv',
+        );
+
+        return response()->download($file, 'import-karyawan.csv', $headers);
     }
 }

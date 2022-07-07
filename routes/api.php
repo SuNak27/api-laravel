@@ -26,7 +26,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/karyawan', KaryawanController::class);
-Route::post('/upload-content', [KaryawanController::class, 'uploadContent']);
+Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
+Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
+Route::get('/download-jabatan', [JabatanController::class, 'downloadJabatan']);
+Route::get('/download-unit', [UnitController::class, 'downloadUnit']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/admin', [AdminController::class, 'index']);
 

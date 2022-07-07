@@ -7,6 +7,7 @@ use App\Models\DetailUnit;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
 use App\Models\Presensi;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -435,18 +436,41 @@ class KaryawanController extends Controller
                 try {
                     DB::beginTransaction();
                     $data = [
-                        'nama' => $importData[0],
-                        'nik' => $importData[1],
-                        'tanggal_lahir' => $importData[2],
-                        'status_kawin' => $importData[3],
-                        'alamat' => $importData[4],
-                        'gender' => $importData[5],
-                        'pendidikan' => $importData[6],
-                        'telepon' => $importData[7],
-                        'agama' => $importData[8],
-                        'username' => $importData[9],
+                        'id_unit' => $importData[0],
+                        'id_jabatan' => $importData[1],
+                        'nama' => $importData[2],
+                        'nik' => $importData[3],
+                        'tanggal_lahir' => $importData[4],
+                        'status_kawin' => $importData[5],
+                        'alamat' => $importData[6],
+                        'gender' => $importData[7],
+                        'pendidikan' => $importData[8],
+                        'telepon' => $importData[9],
+                        'agama' => $importData[10],
+                        'username' => $importData[11],
                     ];
-                    Karyawan::create($data);
+                    $tanggalLahir = Carbon::parse($data['tanggal_lahir']);
+                    $data['tanggal_lahir'] = $tanggalLahir->format('Y-m-d');
+                    $karyawan = Karyawan::create($data);
+                    $detailJabatan = [
+                        'id_jabatan' => $data['id_jabatan'],
+                        'id_karyawan' => $karyawan->id,
+                        'status' => "1",
+                    ];
+                    $detailUnit = [
+                        'id_unit' => $data['id_unit'],
+                        'id_karyawan' => $karyawan->id,
+                        'status' => "1",
+                    ];
+
+                    $dJabatan = DetailJabatan::create($detailJabatan);
+                    $dUnit = DetailUnit::create($detailUnit);
+
+                    $newKaryawan = [
+                        'id_jabatan' => $dJabatan->id,
+                        'id_unit' => $dUnit->id,
+                    ];
+                    $karyawan->update($newKaryawan);
                     DB::commit();
                 } catch (\Exception $e) {
                     //throw $th;

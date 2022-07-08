@@ -6,6 +6,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingPresensiController;
 use App\Http\Controllers\SettingTahunController;
@@ -30,6 +31,7 @@ Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
 Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
 Route::get('/download-jabatan', [JabatanController::class, 'downloadJabatan']);
 Route::get('/download-unit', [UnitController::class, 'downloadUnit']);
+Route::get('/master-data', [MasterDataController::class, 'index']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/admin', [AdminController::class, 'index']);
 

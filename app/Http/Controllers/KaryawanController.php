@@ -479,7 +479,7 @@ class KaryawanController extends Controller
             }
             return response()->json([
                 'message' => "$j records successfully uploaded"
-            ]);
+            ], Response::HTTP_CREATED);
         } else {
             //no file was uploaded
             throw new \Exception('No file was uploaded', Response::HTTP_BAD_REQUEST);

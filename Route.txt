@@ -68,3 +68,27 @@ https://api-graha.belanj.id/public/api/izin/{:id_izin} --------> PUT
     "tanggal_selesai": "date => 2022-07-15",
     "keterangan": "string => Lorem ipsum"
 }
+
+// Lembur
+https://api-graha.belanj.id/public/api/lembur --------> GET
+https://api-graha.belanj.id/public/api/lembur --------> POST
+https://api-graha.belanj.id/public/api/lembur/{:id_lembur} --------> PUT
+{
+    "id_karyawan": integer => 1, 2,
+    "tanggal": "date => 2022-07-12",
+    "jam_mulai": "time => 13:00",
+    "jam_akhir": "time => 14:00",
+    "keterangan": "string => Test"
+}
+
+// Perdin
+https://api-graha.belanj.id/public/api/perdin --------> GET
+https://api-graha.belanj.id/public/api/perdin --------> POST
+https://api-graha.belanj.id/public/api/perdin/{:id_perdin} --------> PUT
+{
+    "id_karyawan": integer => 1, 2,
+    "tanggal": "date => 2022-07-12",
+    "jam_mulai": "time => 13:00",
+    "jam_akhir": "time => 14:00",
+    "keterangan": "string => Test"
+}

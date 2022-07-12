@@ -18,18 +18,18 @@ class LemburController extends Controller
      */
     public function index()
     {
-        $lembur = DetailLembur::join("lemburs", "detail_lemburs.id_lembur", "=", "lemburs.id")
-            ->join('karyawans', 'lemburs.id_karyawan', '=', 'karyawans.id')
+        $lembur = Lembur::join('karyawans', 'lemburs.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "lemburs.id as id_lembur",
                 "karyawans.nama as nama_karyawan",
+                "lemburs.status_lembur",
                 "lemburs.tanggal",
                 "lemburs.jam_mulai",
                 "lemburs.jam_akhir",
-                "lemburs.keterangan",
-                "detail_lemburs.tgl_pengajuan",
-                "detail_lemburs.tgl_disetujui",
-                "detail_lemburs.keterangan as catatan",
+                "lemburs.tgl_pengajuan",
+                "lemburs.tgl_persetujuan",
+                "lemburs.keterangan_lembur",
+                "lemburs.keterangan_persetujuan",
             )
             ->get();
 
@@ -65,7 +65,6 @@ class LemburController extends Controller
             'tanggal' => 'required',
             'jam_mulai' => 'required',
             'jam_akhir' => 'required',
-            'keterangan' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -73,20 +72,30 @@ class LemburController extends Controller
         }
 
         try {
-            $lembur = Lembur::create($request->all());
+            $id_karyawan = $request->id_karyawan;
+            $tanggal = $request->tanggal;
+            $check = Lembur::where('id_karyawan', $id_karyawan)->where('tanggal', $tanggal)->select('id')->first();
 
-            DetailLembur::create([
-                'id_lembur' => $lembur->id,
-                'tgl_pengajuan' => date('Y-m-d'),
-            ]);
+            if ($check) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Anda telah mengajukan izin pada tanggal tersebut, Silahkan hubungi admin untuk konfirmasi jika perubahan data',
+                ];
 
-            $response = [
-                'success' => true,
-                'message' => 'Berhasil',
-                'data' => $lembur
-            ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                $request['tgl_pengajuan'] = date('Y-m-d');
+                $request['status_izin'] = "Pengajuan";
+                $izin = Lembur::create($request->all());
 
-            return response()->json($response, Response::HTTP_CREATED);
+                $response = [
+                    'success' => true,
+                    'message' => 'Berhasil',
+                    'data' => $izin
+                ];
+
+                return response()->json($response, Response::HTTP_CREATED);
+            }
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -100,18 +109,18 @@ class LemburController extends Controller
      */
     public function show($id)
     {
-        $lembur = DetailLembur::join("lemburs", "detail_lemburs.id_lembur", "=", "lemburs.id")
-            ->join('karyawans', 'lemburs.id_karyawan', '=', 'karyawans.id')
+        $lembur = Lembur::join('karyawans', 'lemburs.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "lemburs.id as id_lembur",
                 "karyawans.nama as nama_karyawan",
+                "lemburs.status_lembur",
                 "lemburs.tanggal",
                 "lemburs.jam_mulai",
                 "lemburs.jam_akhir",
-                "lemburs.keterangan",
-                "detail_lemburs.tgl_pengajuan",
-                "detail_lemburs.tgl_disetujui",
-                "detail_lemburs.keterangan as catatan",
+                "lemburs.tgl_pengajuan",
+                "lemburs.tgl_persetujuan",
+                "lemburs.keterangan_lembur",
+                "lemburs.keterangan_persetujuan",
             )
             ->where('lemburs.id', $id)
             ->first();

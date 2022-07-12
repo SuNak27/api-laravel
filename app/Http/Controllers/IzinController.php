@@ -19,18 +19,18 @@ class IzinController extends Controller
      */
     public function index()
     {
-        $izin = DetailIzin::join("izins", "detail_izins.id_izin", "=", "izins.id")
-            ->join('karyawans', 'izins.id_karyawan', '=', 'karyawans.id')
+        $izin = Izin::join('karyawans', 'izins.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "izins.id as id_izin",
                 "karyawans.nama as nama_karyawan",
-                "izins.status",
+                "izins.jenis_izin",
+                "izins.status_izin",
                 "izins.tanggal_mulai",
                 "izins.tanggal_selesai",
-                "izins.keterangan",
-                "detail_izins.tgl_pengajuan",
-                "detail_izins.tgl_disetujui",
-                "detail_izins.keterangan as catatan",
+                "izins.tgl_pengajuan",
+                "izins.tgl_persetujuan",
+                "izins.keterangan_izin",
+                "izins.keterangan_persetujuan",
             )
             ->get();
 
@@ -76,7 +76,7 @@ class IzinController extends Controller
             $id_karyawan = $request->id_karyawan;
             $tanggal = $request->tanggal_mulai;
             $check = Izin::where('id_karyawan', $id_karyawan)->where('tanggal_mulai', $tanggal)->select('id')->first();
-            // dd($check);
+
             if ($check) {
                 $response = [
                     'success' => false,
@@ -110,26 +110,28 @@ class IzinController extends Controller
      */
     public function show($id)
     {
-        $izin = DetailIzin::join("izins", "detail_izins.id_izin", "=", "izins.id")
-            ->join('karyawans', 'izins.id_karyawan', '=', 'karyawans.id')
+        $izin = Izin::join('karyawans', 'izins.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "izins.id as id_izin",
                 "karyawans.nama as nama_karyawan",
-                "izins.status",
+                "izins.jenis_izin",
+                "izins.status_izin",
                 "izins.tanggal_mulai",
                 "izins.tanggal_selesai",
-                "izins.keterangan",
-                "detail_izins.tgl_pengajuan",
-                "detail_izins.tgl_disetujui",
-                "detail_izins.keterangan as catatan",
+                "izins.tgl_pengajuan",
+                "izins.tgl_persetujuan",
+                "izins.keterangan_izin",
+                "izins.keterangan_persetujuan",
             )
-            ->where("izins.id", $id)
-            ->first();
+            ->where('izins.id', $id)
+            ->get();
+
         $response = [
             'success' => true,
             'message' => 'Berhasil',
             'data' => $izin
         ];
+
         return response()->json($response, Response::HTTP_OK);
     }
 
@@ -153,7 +155,6 @@ class IzinController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $izin = Izin::findOrFail($id);
         try {
             $izin->update($request->all());

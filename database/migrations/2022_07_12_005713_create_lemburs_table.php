@@ -16,10 +16,14 @@ class CreateLembursTable extends Migration
         Schema::create('lemburs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_karyawan');
+            $table->enum('status_lembur', ['Pengajuan', 'Diterima', 'Ditolak']);
             $table->date('tanggal');
             $table->time('jam_mulai');
             $table->time('jam_akhir');
-            $table->string('keterangan');
+            $table->string('keterangan_lembur');
+            $table->date('tgl_pengajuan');
+            $table->date('tgl_persetujuan')->nullable();
+            $table->string('keterangan_persetujuan')->nullable();
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLembursTable extends Migration
+class CreateDetailLembursTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateLembursTable extends Migration
      */
     public function up()
     {
-        Schema::create('lemburs', function (Blueprint $table) {
+        Schema::create('detail_lemburs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_karyawan');
-            $table->date('tanggal');
-            $table->time('jam_mulai');
-            $table->time('jam_akhir');
-            $table->string('keterangan');
+            $table->foreignId('id_lembur');
+            $table->date('tgl_pengajuan');
+            $table->date('tgl_disetujui')->nullable();
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ class CreateLembursTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lemburs');
+        Schema::dropIfExists('detail_lemburs');
     }
 }

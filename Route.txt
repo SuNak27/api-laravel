@@ -56,3 +56,15 @@ https://api-graha.belanj.id/public/api/setting_lokasi/{:id_lokasi} --------> PUT
     "latitude": "string => -6.193125",
     "longitude": "string => 106.821810"
 }
+
+// Izin
+https://api-graha.belanj.id/public/api/izin --------> GET
+https://api-graha.belanj.id/public/api/izin --------> POST
+https://api-graha.belanj.id/public/api/izin/{:id_izin} --------> PUT
+{
+    "id_karyawan": "integer => 1, 2",
+    "status": "enum(string) => Sakit, Izin, Cuti",
+    "tanggal_mulai": "date => 2022-07-12",
+    "tanggal_selesai": "date => 2022-07-15",
+    "keterangan": "string => Lorem ipsum"
+}

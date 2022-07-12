@@ -85,13 +85,13 @@ class LemburController extends Controller
                 return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
             } else {
                 $request['tgl_pengajuan'] = date('Y-m-d');
-                $request['status_izin'] = "Pengajuan";
-                $izin = Lembur::create($request->all());
+                $request['status_lembur'] = "Pengajuan";
+                $lembur = Lembur::create($request->all());
 
                 $response = [
                     'success' => true,
                     'message' => 'Berhasil',
-                    'data' => $izin
+                    'data' => $lembur
                 ];
 
                 return response()->json($response, Response::HTTP_CREATED);

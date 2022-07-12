@@ -63,10 +63,9 @@ class IzinController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
-            'status' => 'required',
+            'jenis_izin' => 'required',
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
-            'keterangan' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -74,20 +73,30 @@ class IzinController extends Controller
         }
 
         try {
-            $izin = Izin::create($request->all());
+            $id_karyawan = $request->id_karyawan;
+            $tanggal = $request->tanggal_mulai;
+            $check = Izin::where('id_karyawan', $id_karyawan)->where('tanggal_mulai', $tanggal)->select('id')->first();
+            // dd($check);
+            if ($check) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Anda telah mengajukan izin pada tanggal tersebut, Silahkan hubungi admin untuk konfirmasi jika perubahan data',
+                ];
 
-            DetailIzin::create([
-                'id_izin' => $izin->id,
-                'tgl_pengajuan' => date('Y-m-d'),
-            ]);
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                $request['tgl_pengajuan'] = date('Y-m-d');
+                $request['status_izin'] = "Pengajuan";
+                $izin = Izin::create($request->all());
 
-            $response = [
-                'success' => true,
-                'message' => 'Berhasil',
-                'data' => $izin
-            ];
+                $response = [
+                    'success' => true,
+                    'message' => 'Berhasil',
+                    'data' => $izin
+                ];
 
-            return response()->json($response, Response::HTTP_CREATED);
+                return response()->json($response, Response::HTTP_CREATED);
+            }
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

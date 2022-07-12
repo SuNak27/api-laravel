@@ -16,10 +16,14 @@ class CreateIzinsTable extends Migration
         Schema::create('izins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_karyawan');
-            $table->enum('status', ['Izin', 'Cuti', 'Sakit']);
+            $table->enum('jenis_izin', ['Izin', 'Cuti', 'Sakit']);
+            $table->enum('status_izin', ['Pengajuan', 'Diterima', 'Ditolak']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
-            $table->text('keterangan')->nullable();
+            $table->date('tgl_pengajuan');
+            $table->date('tgl_persetujuan')->nullable();
+            $table->string('keterangan_izin')->nullable();
+            $table->text('keterangan_persetujuan')->nullable();
             $table->timestamps();
         });
     }

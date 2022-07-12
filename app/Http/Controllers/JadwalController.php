@@ -292,14 +292,14 @@ class JadwalController extends Controller
     public function bulanTahun()
     {
         $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
-            ->join('detail_units', 'jadwals.id_unit', '=', 'detail_units.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
-            ->join('detail_jabatans', 'jadwals.id_jabatan', '=', 'detail_jabatans.id')
+            ->join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
-            ->select('jadwals.id', 'jadwals.id_karyawan', 'jadwals.id_tahun', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', 'jadwals.bulan')
+            ->select('jadwals.id', 'jadwals.id_karyawan', 'jadwals.id_tahun', 'karyawans.nama as nama_karyawan', 'jabatans.nama_jabatan as nama_jabatan', 'units.nama_unit as nama_unit', 'setting_tahuns.tahun as tahun', DB::raw("MONTH(jadwals.tanggal) as bulan"))
             ->orderBy('jadwals.id_karyawan')
-            ->groupBy('jadwals.id_tahun', 'jadwals.bulan', 'jadwals.id_karyawan')
+            ->groupBy('jadwals.id_tahun', DB::raw("MONTH(jadwals.tanggal)"), 'jadwals.id_karyawan')
             ->get();
 
         $response = [

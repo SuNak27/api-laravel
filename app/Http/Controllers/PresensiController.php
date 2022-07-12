@@ -62,7 +62,6 @@ class PresensiController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
-            'jam' => 'required',
             'mode_absen' => 'required',
             'id_shift' => 'required',
         ]);
@@ -72,8 +71,14 @@ class PresensiController extends Controller
         }
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
-            $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
+
+            if ($request->tanggal != null) {
+                $tanggal = $request->tanggal;
+                $jam_masuk = $request->jam_masuk;
+            } else {
+                $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
+                $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
+            }
             $check = Jadwal::join('detail_jadwals', 'jadwals.id', '=', 'detail_jadwals.id_jadwal')
                 ->where('jadwals.id_karyawan', $request->id_karyawan)
                 ->where('jadwals.tanggal', $tanggal)
@@ -82,6 +87,8 @@ class PresensiController extends Controller
 
             if ($request->jam_keluar == null) {
                 $jam_keluar = null;
+            } else if (preg_match("/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/", $request->jam_keluar)) {
+                $jam_keluar = date("g:i A", strtotime($request->jam_keluar));;
             } else {
                 $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
             }
@@ -112,12 +119,15 @@ class PresensiController extends Controller
                     'tanggal' => $tanggal,
                     'jam_masuk' => $jam_masuk,
                     'jam_keluar' => $jam_keluar,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
                     'status' => $status,
                     'mode_absen' => $request->mode_absen,
                     'keterangan' => $request->keterangan
                 ];
 
                 $presensi = Presensi::create($data);
+
                 $response = [
                     'success' => true,
                     'message' => 'Berhasil',
@@ -128,8 +138,8 @@ class PresensiController extends Controller
             } else {
                 $response = [
                     'success' => false,
-                    'message' => 'Gagal',
-                    'data' => 'Jadwal tidak ditemukan'
+                    'message' => 'Jadwal tidak ditemukan',
+                    'data' => null
                 ];
 
                 return response()->json($response, Response::HTTP_BAD_REQUEST);
@@ -186,9 +196,23 @@ class PresensiController extends Controller
         $presensi = Presensi::findOrFail($id);
 
         try {
-            $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
-            $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
-            $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
+            if ($request->tanggal != null) {
+                $tanggal = $request->tanggal;
+                $jam_masuk = $request->jam_masuk;
+            } else {
+                $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
+                $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
+            }
+
+            if ($request->jam_keluar == null) {
+                $jam_keluar = null;
+            } else if (preg_match("/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/", $request->jam_keluar)) {
+                $jam_keluar = date("g:i A", strtotime($request->jam_keluar));;
+            } else {
+                $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
+            }
+
+            // $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
             $data = $request->all();
             if ($request->jam_keluar) {
                 $data['jam_keluar'] = $jam_keluar;

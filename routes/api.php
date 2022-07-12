@@ -6,6 +6,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingPresensiController;
@@ -26,64 +27,67 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::group(['middleware' => ['auth:sanctum']], function () {
+});
 Route::resource('/karyawan', KaryawanController::class);
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
 Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
 Route::get('/download-jabatan', [JabatanController::class, 'downloadJabatan']);
 Route::get('/download-unit', [UnitController::class, 'downloadUnit']);
 Route::get('/master-data', [MasterDataController::class, 'index']);
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::get('/admin', [AdminController::class, 'index']);
 
-    // Karyawan
-    // Route::resource('/karyawan', KaryawanController::class);
-    Route::post('/login/karyawan', [KaryawanController::class, 'login']);
-    Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
-    Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);
+Route::get('/admin', [AdminController::class, 'index']);
 
-    // Jadwal
-    Route::resource('/jadwal', JadwalController::class);
-    Route::get('/jadwal/unit/{id_unit}', [JadwalController::class, 'jadwalUnit']);
-    Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
-    Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
-    Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
-    Route::get("/jadwal/karyawan/{id_karyawan}/tanggal/{tanggal}", [JadwalController::class, "checkShift"]);
+// Karyawan
+// Route::resource('/karyawan', KaryawanController::class);
+Route::post('/login/karyawan', [KaryawanController::class, 'login']);
+Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
+Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);
 
-    // Aturan Presensi
-    Route::resource('/aturan-presensi', SettingPresensiController::class);
+// Jadwal
+Route::resource('/jadwal', JadwalController::class);
+Route::get('/jadwal/unit/{id_unit}', [JadwalController::class, 'jadwalUnit']);
+Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
+Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
+Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
+Route::get("/jadwal/karyawan/{id_karyawan}/tanggal/{tanggal}", [JadwalController::class, "checkShift"]);
 
-    // Presensi
-    Route::resource('/presensi', PresensiController::class);
-    Route::get('/presensi/{id_karyawan}/tanggal/{tanggal}', [PresensiController::class, 'id_presensi']);
-    Route::get('/presensi/karyawan/{id_karyawan}', [PresensiController::class, "karyawan"]);
-    Route::put('/presensis/{id}', [PresensiController::class, "updateWeb"]);
-    Route::get('/presensis', [PresensiController::class, "rekap"]);
+// Aturan Presensi
+Route::resource('/aturan-presensi', SettingPresensiController::class);
 
-    // Shift
-    Route::resource('/shift', ShiftController::class);
+// Presensi
+Route::resource('/presensi', PresensiController::class);
+Route::get('/presensi/{id_karyawan}/tanggal/{tanggal}', [PresensiController::class, 'id_presensi']);
+Route::get('/presensi/karyawan/{id_karyawan}', [PresensiController::class, "karyawan"]);
+Route::put('/presensis/{id}', [PresensiController::class, "updateWeb"]);
+Route::get('/presensis', [PresensiController::class, "rekap"]);
 
-    // Setting Tahun
-    Route::resource('/setting_tahun', SettingTahunController::class);
-    Route::get('/setting_tahuns', [SettingTahunController::class, 'tahun_aktif']);
+// Shift
+Route::resource('/shift', ShiftController::class);
 
-    // Jabatan
-    Route::resource('/jabatan', JabatanController::class);
-    Route::get('/jabatans/{id_karyawan}', [JabatanController::class, 'detailJabatan']);
+// Setting Tahun
+Route::resource('/setting_tahun', SettingTahunController::class);
+Route::get('/setting_tahuns', [SettingTahunController::class, 'tahun_aktif']);
 
-    // Unit
-    Route::resource('/unit', UnitController::class);
+// Jabatan
+Route::resource('/jabatan', JabatanController::class);
+Route::get('/jabatans/{id_karyawan}', [JabatanController::class, 'detailJabatan']);
 
-    // Gaji
-    Route::resource('/gaji', GajiController::class);
-    Route::get("/gaji/bulan/{bulan}", [GajiController::class, "detailGaji"]);
-    Route::get("/gajiAll", [GajiController::class, "gajiAll"]);
-    Route::get("/gaji/check/{id_unit}/{id_jabatan}", [GajiController::class, "checkGaji"]);
-    Route::post("/gajiKaryawan", [GajiController::class, "gajiKaryawan"]);
-    // Route::resource('/karyawan', KaryawanController::class);
-    // Route::resource('/jadwal', JadwalController::class);
-    Route::post('logout', [AuthController::class, 'logout']);
-});
+// Unit
+Route::resource('/unit', UnitController::class);
 
+// Gaji
+Route::resource('/gaji', GajiController::class);
+Route::get("/gaji/bulan/{bulan}", [GajiController::class, "detailGaji"]);
+Route::get("/gajiAll", [GajiController::class, "gajiAll"]);
+Route::get("/gaji/check/{id_unit}/{id_jabatan}", [GajiController::class, "checkGaji"]);
+Route::post("/gajiKaryawan", [GajiController::class, "gajiKaryawan"]);
+// Route::resource('/karyawan', KaryawanController::class);
+// Route::resource('/jadwal', JadwalController::class);
+Route::post('logout', [AuthController::class, 'logout']);
+
+// SeetingLokasi
+Route::resource('/setting_lokasi', LokasiController::class);
 
 
 Route::controller(AuthController::class)->group(function () {

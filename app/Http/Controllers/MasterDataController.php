@@ -17,6 +17,7 @@ class MasterDataController extends Controller
         $jabatan = Jabatan::all();
         $unit = Unit::all();
         $setting_tahun = SettingTahun::all();
+        $settingTahun = SettingTahun::where('status', '1')->first();
         $shift = Shift::join("setting_tahuns", "shifts.id_tahun", "=", "setting_tahuns.id")->select("shifts.*", "setting_tahuns.tahun", "setting_tahuns.status")->get();
         $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
@@ -34,6 +35,7 @@ class MasterDataController extends Controller
             "unit" => $unit,
             "shift" => $shift,
             "setting_tahun" => $setting_tahun,
+            "tahun_aktif" => $settingTahun
         ];
         return response()->json($response, Response::HTTP_OK);
     }

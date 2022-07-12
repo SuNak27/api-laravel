@@ -4,7 +4,7 @@ https://api-graha.belanj.id/public/api/karyawan --------> POST
 https://api-graha.belanj.id/public/api/karyawan/{:id} ------> GET
 https://api-graha.belanj.id/public/api/karyawan/{:id} ------> PUT
 {
-	 'nama' 	=> 'required',
+	     'nama' 	=> 'required',
          'nik' 		=> 'required|numeric',
          'id_jabatan' 	=> 'required',
          'id_unit' 	=> 'required',
@@ -36,10 +36,23 @@ https://api-graha.belanj.id/public/api/presensi/{:id_karyawan}/tanggal/{:tanggal
 https://api-graha.belanj.id/public/api/presensi --------> POST
 https://api-graha.belanj.id/public/api/presensi/{:id_presensi} --------> PUT
 {
-	'id_karyawan'	 => 'required',
-	'tanggal'	 => 'required',
-	'jam_masuk'	 => 'required',
-	'jam_keluar'	 => '...',
-	'status' 	 => 'required',
-	'keterangan'	 => '...'
+    "id_karyawan": "integer => 1, 2",
+    "id_shift": "integer => 1, 2",
+    "tanggal": "date => 2022-07-12",
+    "jam_masuk": "time => 08:00",
+    "jam_keluar": "unix timestamp => 1657580613 atau time => 12:00",
+    "latitude": " string => -6.193125",
+    "longitude": "string => 106.821810",
+    "mode_absen": "string => 0 untuk web atau 1 untuk android",
+    "keterangan": "string || null"
+},
+
+// Setting Lokasi
+https://api-graha.belanj.id/public/api/setting_lokasi --------> GET
+https://api-graha.belanj.id/public/api/setting_lokasi --------> POST
+https://api-graha.belanj.id/public/api/setting_lokasi/{:id_lokasi} --------> PUT
+{
+    "nama_lokasi": "string => lokasi 1",
+    "latitude": "string => -6.193125",
+    "longitude": "string => 106.821810"
 }

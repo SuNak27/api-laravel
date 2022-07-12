@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePresensisTable extends Migration
+class CreateIzinsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,12 @@ class CreatePresensisTable extends Migration
      */
     public function up()
     {
-        Schema::create('presensis', function (Blueprint $table) {
+        Schema::create('izins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_karyawan');
-            $table->foreignId('id_shift');
-            $table->date('tanggal');
-            $table->time('jam_masuk');
-            $table->time('jam_keluar')->nullable();
-            $table->string('latitude');
-            $table->string('longitude');
-            $table->enum('status', ['Hadir', 'Telat']);
-            $table->enum('mode_absen', [0, 1]);
+            $table->enum('status', ['Izin', 'Cuti', 'Sakit']);
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai');
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });
@@ -36,6 +31,6 @@ class CreatePresensisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('presensis');
+        Schema::dropIfExists('izins');
     }
 }

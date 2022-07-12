@@ -64,7 +64,9 @@ class AuthController extends Controller
 
                 return response()->json($response, 401);
             }
+
             $user = User::where('email', $request->email)->firstOrFail();
+
             if (!Hash::check($request->password, $user->password)) {
                 throw new Exception('Error in Login');
             }

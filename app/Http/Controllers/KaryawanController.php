@@ -72,7 +72,6 @@ class KaryawanController extends Controller
             'gender' => 'required',
             'pendidikan' => 'required',
             'telepon' => 'required|numeric',
-            'image'  => 'required|mimes:png,jpg,jpeg,gif|max:2305',
         ]);
 
         if ($validator->fails()) {

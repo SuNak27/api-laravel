@@ -17,6 +17,7 @@ use App\Models\Presensi;
 use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -48,12 +49,27 @@ class DatabaseSeeder extends Seeder
         Jabatan::create([
             'nama_jabatan' => 'Karyawan',
         ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Suster',
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Dokter',
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Manager',
+        ]);
 
         Unit::create([
             'nama_unit' => 'UGD',
         ]);
         Unit::create([
             'nama_unit' => 'Poli Gigi',
+        ]);
+        Unit::create([
+            'nama_unit' => 'IGD',
+        ]);
+        Unit::create([
+            'nama_unit' => 'Poli Jantung',
         ]);
 
         DetailJabatan::create([
@@ -202,6 +218,12 @@ class DatabaseSeeder extends Seeder
             'id_karyawan' => '2',
             'bulan' => '2022-06',
             'denda' => '0',
+        ]);
+
+        User::create([
+            'name' => 'Alfad Sabil Haq',
+            'email' => 'admin@ok.com',
+            'password' => Hash::make('123456')
         ]);
     }
 }

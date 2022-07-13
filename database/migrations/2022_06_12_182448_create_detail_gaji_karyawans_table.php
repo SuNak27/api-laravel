@@ -18,7 +18,7 @@ class CreateDetailGajiKaryawansTable extends Migration
             $table->foreignId("id_detail_gaji");
             $table->foreignId("id_karyawan");
             $table->string("bulan");
-            $table->foreignId("denda");
+            $table->integer("denda");
             $table->timestamps();
         });
     }

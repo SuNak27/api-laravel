@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -45,13 +46,12 @@ class AuthController extends Controller
 
         if ($validate->fails()) {
             $response = [
-                "satus" => 'Error',
-                "message" => "Validate Error",
-                "error" => $validate->errors(),
-                "content" => null
+                'success' => false,
+                'message' => 'Validator error',
+                'error' => $validate->errors()
             ];
 
-            return response()->json($response, 200);
+            return response()->json($response, Response::HTTP_OK);
         } else {
             $credentials = request(['email', 'password']);
 
@@ -64,7 +64,9 @@ class AuthController extends Controller
 
                 return response()->json($response, 401);
             }
+
             $user = User::where('email', $request->email)->firstOrFail();
+
             if (!Hash::check($request->password, $user->password)) {
                 throw new Exception('Error in Login');
             }
@@ -79,11 +81,11 @@ class AuthController extends Controller
     // method for user logout and delete token
     public function logout(Request $request)
     {
-        return auth()->user()->tokens()->delete();
-        $response = [
-            'status' => 'success',
-            'message' => 'Logout success',
-        ];
+        // return auth()->user()->tokens()->delete();
+        // $response = [
+        //     'status' => 'success',
+        //     'message' => 'Logout success',
+        // ];
 
         // return response()->json($response, 200);
     }

@@ -3,19 +3,15 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GajiController;
-use App\Http\Controllers\IzinController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KaryawanController;
-use App\Http\Controllers\LemburController;
-use App\Http\Controllers\LokasiController;
-use App\Http\Controllers\MasterDataController;
-use App\Http\Controllers\PerdinController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingPresensiController;
 use App\Http\Controllers\SettingTahunController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UnitController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,14 +26,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Route::resource('/karyawan', KaryawanController::class);
+    // Route::resource('/jadwal', JadwalController::class);
+    Route::post('logout', [AuthController::class, 'logout']);
 });
 
-Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
-Route::post('/upload-jadwal', [JadwalController::class, 'uploadJadwal']);
-Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
-Route::get('/download-jabatan', [JabatanController::class, 'downloadJabatan']);
-Route::get('/download-unit', [UnitController::class, 'downloadUnit']);
-Route::get('/master-data', [MasterDataController::class, 'index']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('login', 'login');
+    Route::post('register', 'register');
+    // Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
+});
 
 Route::get('/admin', [AdminController::class, 'index']);
 
@@ -45,11 +44,9 @@ Route::get('/admin', [AdminController::class, 'index']);
 Route::resource('/karyawan', KaryawanController::class);
 Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
-Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);
 
 // Jadwal
 Route::resource('/jadwal', JadwalController::class);
-Route::get('/jadwal/unit/{id_unit}', [JadwalController::class, 'jadwalUnit']);
 Route::get('/jadwal/{id_karyawan}/bulan/{bulan}/tahun/{id_tahun}', [JadwalController::class, 'karyawan']);
 Route::get('/jadwals', [JadwalController::class, 'bulanTahun']);
 Route::get('/jadwal/karyawan/{id_karyawan}/shift/{id_shift}/tanggal/{tanggal}', [JadwalController::class, "check"]);
@@ -85,25 +82,3 @@ Route::get("/gaji/bulan/{bulan}", [GajiController::class, "detailGaji"]);
 Route::get("/gajiAll", [GajiController::class, "gajiAll"]);
 Route::get("/gaji/check/{id_unit}/{id_jabatan}", [GajiController::class, "checkGaji"]);
 Route::post("/gajiKaryawan", [GajiController::class, "gajiKaryawan"]);
-// Route::resource('/karyawan', KaryawanController::class);
-// Route::resource('/jadwal', JadwalController::class);
-Route::post('logout', [AuthController::class, 'logout']);
-
-// SeetingLokasi
-Route::resource('/setting_lokasi', LokasiController::class);
-
-// Izin
-Route::resource('/izin', IzinController::class);
-
-// Perdin
-Route::resource('/perdin', PerdinController::class);
-
-// Lembur
-Route::resource('/lembur', LemburController::class);
-
-Route::controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    // Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-});

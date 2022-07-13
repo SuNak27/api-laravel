@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class UnitController extends Controller
@@ -44,20 +43,6 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $error = $validator->errors()->first();
-            $response = [
-                'success' => false,
-                'message' => 'Terdapat data yang salah atau kosong',
-                'error' => $error
-            ];
-            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
             $unit = Unit::create($request->all());
             $response = [
@@ -135,34 +120,5 @@ class UnitController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function downloadUnit()
-    {
-        $fileName = 'unit.csv';
-        $unit = Unit::all();
-
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-        );
-
-        $columns = array('ID', 'Nama Unit');
-
-        $callback = function () use ($unit, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($unit as $task) {
-                $row['ID']  = $task->id;
-                $row['Nama Unit']  = $task->nama_unit;
-
-                fputcsv($file, array($row['ID'], $row['Nama Unit']));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 }

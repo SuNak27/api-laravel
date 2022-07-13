@@ -7,7 +7,6 @@ use App\Models\Jabatan;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class JabatanController extends Controller
@@ -46,19 +45,6 @@ class JabatanController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $error = $validator->errors()->first();
-            $response = [
-                'success' => false,
-                'message' => 'Terdapat data yang salah atau kosong',
-                'error' => $error
-            ];
-            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
         try {
             $jabatan = Jabatan::create($request->all());
             $response = [
@@ -108,21 +94,6 @@ class JabatanController extends Controller
     public function update(Request $request, $id)
     {
         $jabatan = Jabatan::findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            $error = $validator->errors()->first();
-            $response = [
-                'success' => false,
-                'message' => 'Terdapat data yang salah atau kosong',
-                'error' => $error
-            ];
-            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
             $jabatan->update($request->all());
             $response = [
@@ -151,36 +122,6 @@ class JabatanController extends Controller
         //
     }
 
-    public function downloadJabatan()
-    {
-        $fileName = 'jabatan.csv';
-        $jabatan = Jabatan::all();
-
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-        );
-
-        $columns = array('ID', 'Nama Jabatan');
-
-        $callback = function () use ($jabatan, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($jabatan as $task) {
-                $row['ID']  = $task->id;
-                $row['Nama Jabatan']  = $task->nama_jabatan;
-
-                fputcsv($file, array($row['ID'], $row['Nama Jabatan']));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    // Belum terpakai
     public function detailJabatan($id_karyawan)
     {
         $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')

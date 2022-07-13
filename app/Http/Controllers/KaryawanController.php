@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailGaji;
+use App\Models\DetailGajiKaryawan;
 use App\Models\DetailJabatan;
 use App\Models\DetailUnit;
+use App\Models\Gaji;
 use App\Models\Jadwal;
 use App\Models\Karyawan;
 use App\Models\Presensi;
-use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +27,7 @@ class KaryawanController extends Controller
      */
     public function index()
     {
-        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
             ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
             ->join('units', 'detail_units.id_unit', '=', 'units.id')
@@ -37,7 +38,7 @@ class KaryawanController extends Controller
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $karyawan
+            'data' => $admin
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -71,21 +72,14 @@ class KaryawanController extends Controller
             'alamat' => 'required',
             'gender' => 'required',
             'pendidikan' => 'required',
-            'telepon' => 'required|numeric',
+            'telepon' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
-            $error = $validator->errors()->first();
-            $response = [
-                'success' => false,
-                'message' => 'Terdapat data yang salah atau kosong',
-                'error' => $error
-            ];
-            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
-
             $data = [
                 'nama' => $request->nama,
                 'nik' => $request->nik,
@@ -98,10 +92,6 @@ class KaryawanController extends Controller
                 'agama' => $request->agama,
                 'username' => $request->username,
             ];
-
-            if ($request->file('image')) {
-                $data['image'] = $request->file('image')->store('karyawans', 'public');
-            }
 
             $karyawan = Karyawan::create($data);
             $detailJabatan = [
@@ -197,7 +187,6 @@ class KaryawanController extends Controller
     public function update(Request $request, $id)
     {
         $karyawan = Karyawan::findOrFail($id);
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'nama' => 'required',
             'nik' => 'required|numeric',
@@ -216,7 +205,6 @@ class KaryawanController extends Controller
         }
 
         try {
-            $oldImage = $karyawan->image;
             $data = [
                 'nama' => $request->nama,
                 'nik' => $request->nik,
@@ -230,17 +218,6 @@ class KaryawanController extends Controller
                 'username' => $request->username,
             ];
 
-            if ($request->file('image')) {
-                if ($request->image) {
-                    if ($oldImage != "") {
-                        Storage::delete('public/' . $oldImage);
-                    }
-                }
-                $data['image'] = $request->file('image')->store('karyawans', 'public');
-            }
-
-
-            // dd($oldImage);
             $karyawan->update($data);
 
             $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
@@ -287,7 +264,7 @@ class KaryawanController extends Controller
                 'data' => $karyawan
             ];
 
-            return response()->json($response, Response::HTTP_CREATED);
+            return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -383,136 +360,5 @@ class KaryawanController extends Controller
         ];
 
         return response()->json($response, Response::HTTP_OK);
-    }
-
-    public function karyawanUnit($id_unit)
-    {
-        $karyawan = Karyawan::join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->join('units', 'detail_units.id_unit', '=', 'units.id')
-            ->select('karyawans.id as id_karyawan', 'karyawans.nama', 'units.nama_unit')
-            ->where('units.id', $id_unit)->get();
-
-        $response = [
-            "success" => true,
-            "message" => "Berhasil",
-            "data" => $karyawan
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
-    }
-
-    public function uploadKaryawan(Request $request)
-    {
-        $file = $request->file('uploaded_file');
-        if ($file) {
-            $filename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension(); //Get extension of uploaded file
-            $tempPath = $file->getRealPath();
-            $fileSize = $file->getSize(); //Get size of uploaded file in bytes
-            //Check for file extension and size
-            $this->checkUploadedFileProperties($extension, $fileSize);
-            //Where uploaded file will be stored on the server
-            $location = 'uploads'; //Created an "uploads" folder for that
-            // Upload file
-            $file->move($location, $filename);
-            // In case the uploaded file path is to be stored in the database
-            $filepath = public_path($location . "/" . $filename);
-            // Reading file
-            $file = fopen($filepath, "r");
-            $importData_arr = array(); // Read through the file and store the contents as an array
-            $i = 0;
-            //Read the contents of the uploaded file
-            while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
-                $num = count($filedata);
-                // Skip first row (Remove below comment if you want to skip the first row)
-                if ($i == 0) {
-                    $i++;
-                    continue;
-                }
-                for ($c = 0; $c < $num; $c++) {
-                    $importData_arr[$i][] = $filedata[$c];
-                }
-                $i++;
-            }
-            fclose($file); //Close after reading
-            $j = 0;
-            foreach ($importData_arr as $importData) {
-                $j++;
-                try {
-                    DB::beginTransaction();
-                    $data = [
-                        'id_unit' => $importData[0],
-                        'id_jabatan' => $importData[1],
-                        'nama' => $importData[2],
-                        'nik' => $importData[3],
-                        'tanggal_lahir' => $importData[4],
-                        'status_kawin' => $importData[5],
-                        'alamat' => $importData[6],
-                        'gender' => $importData[7],
-                        'pendidikan' => $importData[8],
-                        'telepon' => $importData[9],
-                        'agama' => $importData[10],
-                        'username' => $importData[11],
-                    ];
-                    $tanggalLahir = Carbon::parse($data['tanggal_lahir']);
-                    $data['tanggal_lahir'] = $tanggalLahir->format('Y-m-d');
-                    $karyawan = Karyawan::create($data);
-                    $detailJabatan = [
-                        'id_jabatan' => $data['id_jabatan'],
-                        'id_karyawan' => $karyawan->id,
-                        'status' => "1",
-                    ];
-                    $detailUnit = [
-                        'id_unit' => $data['id_unit'],
-                        'id_karyawan' => $karyawan->id,
-                        'status' => "1",
-                    ];
-
-                    $dJabatan = DetailJabatan::create($detailJabatan);
-                    $dUnit = DetailUnit::create($detailUnit);
-
-                    $newKaryawan = [
-                        'id_jabatan' => $dJabatan->id,
-                        'id_unit' => $dUnit->id,
-                    ];
-                    $karyawan->update($newKaryawan);
-                    DB::commit();
-                } catch (\Exception $e) {
-                    //throw $th;
-                    DB::rollBack();
-                }
-            }
-            return response()->json([
-                'message' => "$j records successfully uploaded"
-            ], Response::HTTP_CREATED);
-        } else {
-            //no file was uploaded
-            throw new \Exception('No file was uploaded', Response::HTTP_BAD_REQUEST);
-        }
-    }
-    public function checkUploadedFileProperties($extension, $fileSize)
-    {
-        $valid_extension = array("csv", "xlsx"); //Only want csv and excel files
-        $maxFileSize = 2097152; // Uploaded file size limit is 2mb
-        if (in_array(strtolower($extension), $valid_extension)) {
-            if ($fileSize <= $maxFileSize) {
-            } else {
-                throw new \Exception('No file was uploaded', Response::HTTP_REQUEST_ENTITY_TOO_LARGE); //413 error
-            }
-        } else {
-            throw new \Exception('Invalid file extension', Response::HTTP_UNSUPPORTED_MEDIA_TYPE); //415 error
-        }
-    }
-
-    public function downloadImportKaryawan()
-    {
-        //PDF file is stored under project/public/download/info.pdf
-        $file = public_path() . "/storage/excel/karyawan.csv";
-
-        $headers = array(
-            'Content-Type: text/csv',
-        );
-
-        return response()->download($file, 'import-karyawan.csv', $headers);
     }
 }

@@ -28,7 +28,6 @@ class CreateKaryawansTable extends Migration
             $table->string('telepon');
             $table->string('username')->unique();
             $table->string('password');
-            $table->text('image');
             $table->timestamps();
         });
     }

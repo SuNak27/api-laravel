@@ -18,17 +18,18 @@ class PerdinController extends Controller
      */
     public function index()
     {
-        $perdin = DetailPerdin::join("perdins", "detail_perdins.id_perdin", "=", "perdins.id")
-            ->join('karyawans', 'perdins.id_karyawan', '=', 'karyawans.id')
+        $perdin = Perdin::join('karyawans', 'perdins.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "perdins.id as id_perdin",
                 "karyawans.nama as nama_karyawan",
+                "perdins.status_perdin",
                 "perdins.tanggal_mulai",
                 "perdins.tanggal_selesai",
                 "perdins.kegiatan",
-                "detail_perdins.tgl_pengajuan",
-                "detail_perdins.tgl_disetujui",
-                "detail_perdins.keterangan as catatan",
+                "perdins.tempat_dinas",
+                "perdins.tgl_pengajuan",
+                "perdins.tgl_persetujuan",
+                "perdins.keterangan_persetujuan",
             )
             ->get();
 
@@ -64,6 +65,7 @@ class PerdinController extends Controller
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
             'kegiatan' => 'required',
+            'tempat_dinas' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -71,20 +73,30 @@ class PerdinController extends Controller
         }
 
         try {
-            $perdin = Perdin::create($request->all());
+            $id_karyawan = $request->id_karyawan;
+            $tanggal = $request->tanggal_mulai;
+            $check = Perdin::where('id_karyawan', $id_karyawan)->where('tanggal_mulai', $tanggal)->select('id')->first();
 
-            DetailPerdin::create([
-                'id_perdin' => $perdin->id,
-                'tgl_pengajuan' => date('Y-m-d'),
-            ]);
+            if ($check) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Anda telah mengajukan izin perjalanan dinas pada tanggal tersebut, Silahkan hubungi admin untuk konfirmasi jika perubahan data',
+                ];
 
-            $response = [
-                'success' => true,
-                'message' => 'Berhasil',
-                'data' => $perdin
-            ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            } else {
+                $request['tgl_pengajuan'] = date('Y-m-d');
+                $request['status_perdin'] = "Pengajuan";
+                $perdin = Perdin::create($request->all());
 
-            return response()->json($response, Response::HTTP_CREATED);
+                $response = [
+                    'success' => true,
+                    'message' => 'Berhasil',
+                    'data' => $perdin
+                ];
+
+                return response()->json($response, Response::HTTP_CREATED);
+            }
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

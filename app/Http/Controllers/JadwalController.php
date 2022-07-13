@@ -23,7 +23,7 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        $unit = DetailUnit::join('units', 'detail_units.id_unit', '=', 'units.id')
+        $jadwal = DetailUnit::join('units', 'detail_units.id_unit', '=', 'units.id')
             ->select('detail_units.id_unit as id_unit', 'units.nama_unit', DB::raw('count(id_karyawan) as jumlah_karyawan'))
             ->where('status', '1')
             ->groupBy('id_unit')
@@ -32,7 +32,7 @@ class JadwalController extends Controller
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $unit
+            'data' => $jadwal
         ];
 
         return response()->json($response, Response::HTTP_OK);

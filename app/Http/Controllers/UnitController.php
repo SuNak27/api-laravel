@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class UnitController extends Controller
@@ -43,6 +44,20 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'nama_jabatan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $unit = Unit::create($request->all());
             $response = [

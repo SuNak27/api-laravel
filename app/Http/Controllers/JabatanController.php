@@ -7,6 +7,7 @@ use App\Models\Jabatan;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class JabatanController extends Controller
@@ -45,6 +46,19 @@ class JabatanController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'nama_jabatan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         try {
             $jabatan = Jabatan::create($request->all());
             $response = [
@@ -94,6 +108,21 @@ class JabatanController extends Controller
     public function update(Request $request, $id)
     {
         $jabatan = Jabatan::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'nama_jabatan' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $jabatan->update($request->all());
             $response = [
@@ -120,34 +149,6 @@ class JabatanController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function detailJabatan($id_karyawan)
-    {
-        $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->select('detail_jabatans.id_jabatan')
-            ->where('id_karyawan', $id_karyawan)
-            ->where('status', '1')
-            ->first();
-
-        $unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
-            ->select('detail_units.id_unit')
-            ->where('id_karyawan', $id_karyawan)
-            ->where('status', '1')
-            ->first();
-
-        $detail = [
-            'id_jabatan' => $jabatan->id_jabatan,
-            'id_unit' => $unit->id_unit
-        ];
-
-
-        $response = [
-            'success' => true,
-            'message' => 'Berhasil',
-            'data' => $detail
-        ];
-        return response()->json($response, Response::HTTP_OK);
     }
 
     public function downloadJabatan()
@@ -177,5 +178,34 @@ class JabatanController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    // Belum terpakai
+    public function detailJabatan($id_karyawan)
+    {
+        $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+            ->select('detail_jabatans.id_jabatan')
+            ->where('id_karyawan', $id_karyawan)
+            ->where('status', '1')
+            ->first();
+
+        $unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
+            ->select('detail_units.id_unit')
+            ->where('id_karyawan', $id_karyawan)
+            ->where('status', '1')
+            ->first();
+
+        $detail = [
+            'id_jabatan' => $jabatan->id_jabatan,
+            'id_unit' => $unit->id_unit
+        ];
+
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $detail
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 }

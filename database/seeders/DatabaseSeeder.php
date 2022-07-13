@@ -49,12 +49,27 @@ class DatabaseSeeder extends Seeder
         Jabatan::create([
             'nama_jabatan' => 'Karyawan',
         ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Suster',
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Dokter',
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Manager',
+        ]);
 
         Unit::create([
             'nama_unit' => 'UGD',
         ]);
         Unit::create([
             'nama_unit' => 'Poli Gigi',
+        ]);
+        Unit::create([
+            'nama_unit' => 'IGD',
+        ]);
+        Unit::create([
+            'nama_unit' => 'Poli Jantung',
         ]);
 
         DetailJabatan::create([

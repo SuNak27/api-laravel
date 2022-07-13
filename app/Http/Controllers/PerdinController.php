@@ -110,17 +110,18 @@ class PerdinController extends Controller
      */
     public function show($id)
     {
-        $perdin = DetailPerdin::join("perdins", "detail_perdins.id_perdin", "=", "perdins.id")
-            ->join('karyawans', 'perdins.id_karyawan', '=', 'karyawans.id')
+        $perdin = Perdin::join('karyawans', 'perdins.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "perdins.id as id_perdin",
                 "karyawans.nama as nama_karyawan",
+                "perdins.status_perdin",
                 "perdins.tanggal_mulai",
                 "perdins.tanggal_selesai",
                 "perdins.kegiatan",
-                "detail_perdins.tgl_pengajuan",
-                "detail_perdins.tgl_disetujui",
-                "detail_perdins.keterangan as catatan",
+                "perdins.tempat_dinas",
+                "perdins.tgl_pengajuan",
+                "perdins.tgl_persetujuan",
+                "perdins.keterangan_persetujuan",
             )
             ->where('perdins.id', $id)
             ->first();

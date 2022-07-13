@@ -22,6 +22,7 @@ class IzinController extends Controller
         $izin = Izin::join('karyawans', 'izins.id_karyawan', '=', 'karyawans.id')
             ->select(
                 "izins.id as id_izin",
+                "izins.id_karyawan",
                 "karyawans.nama as nama_karyawan",
                 "izins.jenis_izin",
                 "izins.status_izin",

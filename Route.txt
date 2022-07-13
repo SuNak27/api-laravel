@@ -87,8 +87,8 @@ https://api-graha.belanj.id/public/api/perdin --------> POST
 https://api-graha.belanj.id/public/api/perdin/{:id_perdin} --------> PUT
 {
     "id_karyawan": integer => 1, 2,
-    "tanggal": "date => 2022-07-12",
-    "jam_mulai": "time => 13:00",
+    "tanggal_mulai": "date => 2022-07-12",
+    "tanggal_selesai": "time => 13:00",
     "jam_akhir": "time => 14:00",
     "keterangan": "string => Test"
 }

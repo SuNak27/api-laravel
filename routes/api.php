@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 Route::resource('/karyawan', KaryawanController::class);
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
+Route::post('/upload-jadwal', [JadwalController::class, 'uploadJadwal']);
 Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
 Route::get('/download-jabatan', [JabatanController::class, 'downloadJabatan']);
 Route::get('/download-unit', [UnitController::class, 'downloadUnit']);

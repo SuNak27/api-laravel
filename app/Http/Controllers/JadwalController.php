@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailJadwal;
 use App\Models\DetailUnit;
 use App\Models\Jadwal;
+use App\Models\SettingTahun;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -348,5 +349,140 @@ class JadwalController extends Controller
         ];
 
         return response()->json($response, Response::HTTP_OK);
+    }
+
+    public function uploadJadwal(Request $request)
+    {
+        $file = $request->file('uploaded_file');
+        if ($file) {
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension(); //Get extension of uploaded file
+            $tempPath = $file->getRealPath();
+            $fileSize = $file->getSize(); //Get size of uploaded file in bytes
+            //Check for file extension and size
+            $this->checkUploadedFileProperties($extension, $fileSize);
+            //Where uploaded file will be stored on the server
+            $location = 'uploads'; //Created an "uploads" folder for that
+            // Upload file
+            $file->move($location, $filename);
+            // In case the uploaded file path is to be stored in the database
+            $filepath = public_path($location . "/" . $filename);
+            // Reading file
+            $file = fopen($filepath, "r");
+            $importData_arr = array(); // Read through the file and store the contents as an array
+            $i = 0;
+            //Read the contents of the uploaded file
+            while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
+                $num = count($filedata);
+                // Skip first row (Remove below comment if you want to skip the first row)
+                if ($i == 0) {
+                    $i++;
+                    continue;
+                }
+                for ($c = 0; $c < $num; $c++) {
+                    $importData_arr[$i][] = $filedata[$c];
+                }
+                $i++;
+            }
+            fclose($file); //Close after reading
+            $j = 0;
+            foreach ($importData_arr as $importData) {
+                $j++;
+                try {
+                    DB::beginTransaction();
+                    $data = [
+                        'id_karyawan' => $importData[0],
+                        'id_shift' => $importData[1],
+                        'id_tahun' => $importData[2],
+                        'tanggal' => $importData[3],
+                    ];
+
+                    $dateFormat = 'Y-m-d';
+                    $dateInput = $data['tanggal'];
+
+                    $time = strtotime($dateInput);
+                    $testDate = date($dateFormat, $time);
+
+                    if ($dateInput == $testDate) {
+                        // return 'Valid format' . PHP_EOL;
+                        $start = Carbon::parse($data['tanggal'])->format('Y-m-d');
+                        $end = Carbon::parse($data['tanggal'])->format('Y-m-d');
+                        // return 'Valid format' . $start;
+                    } else {
+                        // return 'Invalid format' . PHP_EOL;
+                        $start = Carbon::parse($data['tanggal'])->startOfMonth()->format('Y-m-d');
+                        $end = Carbon::parse($data['tanggal'])->endOfMonth()->format('Y-m-d');
+                        // return  'Invalid format' . $start;
+                    }
+
+                    $period = CarbonPeriod::create($start, $end);
+
+                    $id_tahun = SettingTahun::where('tahun', Carbon::parse($data['tanggal'])->format('Y'))->select('id')->first();
+
+                    // dd($id_tahun);
+                    foreach ($period as $date) {
+                        $check = Jadwal::where('id_karyawan', $data['id_karyawan'])->where('tanggal', $date->format('Y-m-d'))->first();
+
+                        if ($check == null) {
+                            $jadwal = Jadwal::create([
+                                'id_karyawan' => $data['id_karyawan'],
+                                'id_tahun' => $id_tahun->id,
+                                'tanggal' => $date->format('Y-m-d')
+                            ]);
+                            $id_jadwal = $jadwal->id;
+                        } else {
+                            $id_jadwal = $check->id;
+                        }
+
+                        $shift = $data['id_shift'];
+
+                        $checkDetail = DetailJadwal::where('id_jadwal', $id_jadwal)->where('id_shift', $shift)->first();
+                        if (!$checkDetail) {
+                            DetailJadwal::create([
+                                'id_jadwal' => $id_jadwal,
+                                'id_shift' => $shift,
+                            ]);
+                        }
+                    }
+                    // $jadwal = Jadwal::create($data);
+
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    //throw $th;
+                    DB::rollBack();
+                }
+            }
+            return response()->json([
+                'message' => "$j records successfully uploaded"
+            ], Response::HTTP_CREATED);
+        } else {
+            //no file was uploaded
+            throw new \Exception('No file was uploaded', Response::HTTP_BAD_REQUEST);
+        }
+    }
+    public function checkUploadedFileProperties($extension, $fileSize)
+    {
+        $valid_extension = array("csv", "xlsx"); //Only want csv and excel files
+        $maxFileSize = 2097152; // Uploaded file size limit is 2mb
+        if (in_array(strtolower($extension), $valid_extension)) {
+            if ($fileSize <= $maxFileSize) {
+            } else {
+                throw new \Exception('No file was uploaded', Response::HTTP_REQUEST_ENTITY_TOO_LARGE); //413 error
+            }
+        } else {
+            throw new \Exception('Invalid file extension', Response::HTTP_UNSUPPORTED_MEDIA_TYPE); //415 error
+        }
+    }
+
+    public function downloadImportJadwal()
+    {
+        $file = public_path() . "/storage/excel/jadwal.csv";
+
+        $headers = array(
+            'Content-Type: text/csv',
+        );
+
+        return response()->download($file, 'import-jadwal.csv', $headers);
     }
 }

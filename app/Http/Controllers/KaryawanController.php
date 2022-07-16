@@ -96,7 +96,6 @@ class KaryawanController extends Controller
                 'pendidikan' => $request->pendidikan,
                 'telepon' => $request->telepon,
                 'agama' => $request->agama,
-                'username' => $request->username,
             ];
 
             if ($request->file('image')) {

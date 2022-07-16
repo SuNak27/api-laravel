@@ -45,7 +45,7 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'nama_unit' => 'required',
         ]);
 
         if ($validator->fails()) {

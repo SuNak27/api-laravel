@@ -67,8 +67,18 @@ class PresensiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        // }
 
         try {
 

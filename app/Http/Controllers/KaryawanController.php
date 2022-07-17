@@ -147,19 +147,17 @@ class KaryawanController extends Controller
      */
     public function show($id)
     {
-        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->leftJoin('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->leftJoin('units', 'detail_units.id_unit', '=', 'units.id')
+        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+            ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-            ->where('karyawans.id', $id)
-            ->first();
+            ->where('karyawans.id_karyawan', $id)->first();
 
 
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $admin
+            'data' => $karyawan
         ];
 
         return response()->json($response, Response::HTTP_OK);

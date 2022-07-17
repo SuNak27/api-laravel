@@ -23,7 +23,7 @@ class CreateIzinApprovedsTable extends Migration
             $table->enum('status', ['Proses', 'Disetujui', 'Ditolak']);
             $table->text('keterangan_izin');
             $table->text('keterangan_acc');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

@@ -17,7 +17,7 @@ class CreatePenugasanDetailsTable extends Migration
             $table->id('id_detail_penugasan');
             $table->foreignId('id_penugasan');
             $table->foreign('id_penugasan')->references('id_penugasan')->on('penugasans');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

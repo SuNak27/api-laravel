@@ -25,7 +25,7 @@ class CreatePresensisTable extends Migration
             $table->text('keterangan')->nullable();
             $table->string('latitude');
             $table->string('longitude');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

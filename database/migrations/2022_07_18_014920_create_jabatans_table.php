@@ -16,7 +16,7 @@ class CreateJabatansTable extends Migration
         Schema::create('jabatans', function (Blueprint $table) {
             $table->id('id_jabatan');
             $table->string('nama_jabatan');
-            $table->timestamp('lasupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

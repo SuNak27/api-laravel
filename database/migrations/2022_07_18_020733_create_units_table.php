@@ -16,7 +16,7 @@ class CreateUnitsTable extends Migration
         Schema::create('units', function (Blueprint $table) {
             $table->id('id_unit');
             $table->string('nama_unit');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

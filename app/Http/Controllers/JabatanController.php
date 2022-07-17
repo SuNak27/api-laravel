@@ -19,7 +19,7 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatan = Jabatan::all();
+        $jabatan = Jabatan::where('deleted_at', null)->get();
         $response = [
             'success' => true,
             'message' => 'Berhasil',

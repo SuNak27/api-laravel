@@ -22,7 +22,7 @@ class CreateJadwalKaryawansTable extends Migration
             $table->foreign('id_shift')->references('id_shift')->on('shifts');
             $table->time('jam_masuk');
             $table->time('jam_keluar');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

@@ -21,7 +21,7 @@ class CreateRegistrasiDoktersTable extends Migration
             $table->date('tanggal_awal');
             $table->date('tanggal_akhir');
             $table->enum('status', ['Aktif', 'Blok']);
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

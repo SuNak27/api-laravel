@@ -23,7 +23,7 @@ class CreateDetailJabatansTable extends Migration
             $table->foreign('id_unit')->references('id_unit')->on('units');
             $table->foreignId('id_pangkat')->nullable();
             // $table->foreign('id_pangkat')->references('id_pangkat')->on('pangkat_golongans');
-            $table->timestamp('lastupdate_user');
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamps();
         });
     }

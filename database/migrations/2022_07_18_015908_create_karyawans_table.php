@@ -38,7 +38,7 @@ class CreateKaryawansTable extends Migration
             $table->date('tanggal_resign')->nullable();
             $table->string('bpjs_kesehatan')->nullable();
             $table->string('bpjs_ketenagakerjaan')->nullable();
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

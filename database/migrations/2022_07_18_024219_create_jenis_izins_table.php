@@ -16,7 +16,7 @@ class CreateJenisIzinsTable extends Migration
         Schema::create('jenis_izins', function (Blueprint $table) {
             $table->id('id_jenis_izin');
             $table->string('nama_jenis_izin');
-            $table->timestamp('lastupdate_user')->default(now());
+            $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });

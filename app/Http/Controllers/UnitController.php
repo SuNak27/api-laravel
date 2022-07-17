@@ -17,7 +17,7 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $unit = Unit::all();
+        $unit = Unit::join('users', 'units.lastupdate_user', 'users.id')->where('deleted_at', null)->select('units.id_unit', 'units.nama_unit', 'users.name as lastupdate_user')->get();
         $response = [
             'success' => true,
             'message' => 'Berhasil',

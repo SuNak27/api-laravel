@@ -19,7 +19,7 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatan = Jabatan::where('deleted_at', null)->get();
+        $jabatan = Jabatan::join('users', 'jabatans.lastupdate_user', 'users.id')->where('deleted_at', null)->select('jabatans.id_jabatan', 'jabatans.nama_jabatan', 'users.name as lastupdate_user')->get();
         $response = [
             'success' => true,
             'message' => 'Berhasil',

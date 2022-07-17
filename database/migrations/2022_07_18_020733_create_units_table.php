@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSettingShiftsTable extends Migration
+class CreateUnitsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateSettingShiftsTable extends Migration
      */
     public function up()
     {
-        Schema::create('setting_shifts', function (Blueprint $table) {
-            $table->id();
+        Schema::create('units', function (Blueprint $table) {
+            $table->id('id_unit');
+            $table->string('nama_unit');
+            $table->timestamp('lastupdate_user');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateSettingShiftsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('setting_shifts');
+        Schema::dropIfExists('units');
     }
 }

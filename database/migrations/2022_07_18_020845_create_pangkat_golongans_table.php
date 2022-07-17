@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGajisTable extends Migration
+class CreatePangkatGolongansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateGajisTable extends Migration
      */
     public function up()
     {
-        Schema::create('gajis', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_unit');
+        Schema::create('pangkat_golongans', function (Blueprint $table) {
+            $table->id('id_pangkat');
+            $table->string('pangkat');
+            $table->string('golongan');
+            $table->timestamp('lastupdate_user');
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ class CreateGajisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('gajis');
+        Schema::dropIfExists('pangkat_golongans');
     }
 }

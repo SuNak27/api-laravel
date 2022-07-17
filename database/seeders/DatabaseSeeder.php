@@ -6,14 +6,11 @@ use App\Models\Admin;
 use App\Models\AturanPresensi;
 use App\Models\DetailGaji;
 use App\Models\DetailGajiKaryawan;
-use App\Models\DetailJabatan;
-use App\Models\DetailJadwal;
+// use App\Models\DetailJabatan;
 use App\Models\DetailUnit;
 use App\Models\Gaji;
 use App\Models\Jabatan;
-use App\Models\Jadwal;
 use App\Models\Karyawan;
-use App\Models\Presensi;
 use App\Models\SettingTahun;
 use App\Models\Shift;
 use App\Models\Unit;
@@ -72,21 +69,21 @@ class DatabaseSeeder extends Seeder
             'nama_unit' => 'Poli Jantung',
         ]);
 
-        DetailJabatan::create([
-            'id_karyawan' => 1,
-            'id_jabatan' => 1,
-            'status' => '1',
-        ]);
-        DetailJabatan::create([
-            'id_karyawan' => 2,
-            'id_jabatan' => 1,
-            'status' => '1',
-        ]);
-        DetailJabatan::create([
-            'id_karyawan' => 3,
-            'id_jabatan' => 1,
-            'status' => '1',
-        ]);
+        // DetailJabatan::create([
+        //     'id_karyawan' => 1,
+        //     'id_jabatan' => 1,
+        //     'status' => '1',
+        // ]);
+        // DetailJabatan::create([
+        //     'id_karyawan' => 2,
+        //     'id_jabatan' => 1,
+        //     'status' => '1',
+        // ]);
+        // DetailJabatan::create([
+        //     'id_karyawan' => 3,
+        //     'id_jabatan' => 1,
+        //     'status' => '1',
+        // ]);
 
         DetailUnit::create([
             'id_karyawan' => 1,

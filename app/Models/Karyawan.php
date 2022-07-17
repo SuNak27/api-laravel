@@ -8,22 +8,4 @@ use Illuminate\Database\Eloquent\Model;
 class Karyawan extends Model
 {
     use HasFactory;
-
-    protected $guarded = ['id'];
-
-
-    public function jabatan()
-    {
-        return $this->belongsTo(Jabatan::class);
-    }
-
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
-    }
-
-    public function jadwals()
-    {
-        return $this->hasMany(Jadwal::class);
-    }
 }

@@ -60,6 +60,9 @@ class JabatanController extends Controller
             return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $jabatan = Jabatan::create($request->all());
             $response = [
                 'success' => true,
@@ -124,6 +127,9 @@ class JabatanController extends Controller
         }
 
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $jabatan->update($request->all());
             $response = [
                 'success' => true,

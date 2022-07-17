@@ -59,6 +59,9 @@ class UnitController extends Controller
         }
 
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $unit = Unit::create($request->all());
             $response = [
                 'success' => true,
@@ -109,6 +112,9 @@ class UnitController extends Controller
     {
         $unit = Unit::findOrFail($id);
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $unit->update($request->all());
             $response = [
                 'success' => true,

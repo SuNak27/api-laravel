@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUnitsTable extends Migration
+class CreateJenisIzinsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateUnitsTable extends Migration
      */
     public function up()
     {
-        Schema::create('units', function (Blueprint $table) {
-            $table->id('id_unit');
-            $table->string('nama_unit');
+        Schema::create('jenis_izins', function (Blueprint $table) {
+            $table->id('id_jenis_izin');
+            $table->string('nama_jenis_izin');
             $table->timestamp('lastupdate_user')->default(now());
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateUnitsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('jenis_izins');
     }
 }

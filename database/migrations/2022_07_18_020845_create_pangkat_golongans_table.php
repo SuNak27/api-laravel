@@ -17,7 +17,8 @@ class CreatePangkatGolongansTable extends Migration
             $table->id('id_pangkat');
             $table->string('pangkat');
             $table->string('golongan');
-            $table->timestamp('lastupdate_user');
+            $table->timestamp('lastupdate_user')->default(now());
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

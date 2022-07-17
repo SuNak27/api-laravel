@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Unit;
 use Illuminate\Database\Seeder;
 
 class UnitSeeder extends Seeder
@@ -13,6 +14,17 @@ class UnitSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Unit::create([
+            'nama_unit' => 'UGD',
+        ]);
+        Unit::create([
+            'nama_unit' => 'Poli Gigi',
+        ]);
+        Unit::create([
+            'nama_unit' => 'IGD',
+        ]);
+        Unit::create([
+            'nama_unit' => 'Poli Jantung',
+        ]);
     }
 }

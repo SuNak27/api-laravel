@@ -32,42 +32,19 @@ class DatabaseSeeder extends Seeder
             'username' => 'admin',
             'password' => bcrypt('admin'),
         ]);
+        $this->call(UnitSeeder::class);
+        $this->call(JabatanSeeder::class);
+        $this->call(KaryawanSeeder::class);
 
-        SettingTahun::create([
-            'tahun' => '2021',
-            'status' => '0',
-        ]);
+        // SettingTahun::create([
+        //     'tahun' => '2021',
+        //     'status' => '0',
+        // ]);
 
-        SettingTahun::create([
-            'tahun' => '2022',
-            'status' => '1',
-        ]);
-
-        Jabatan::create([
-            'nama_jabatan' => 'Karyawan',
-        ]);
-        Jabatan::create([
-            'nama_jabatan' => 'Suster',
-        ]);
-        Jabatan::create([
-            'nama_jabatan' => 'Dokter',
-        ]);
-        Jabatan::create([
-            'nama_jabatan' => 'Manager',
-        ]);
-
-        Unit::create([
-            'nama_unit' => 'UGD',
-        ]);
-        Unit::create([
-            'nama_unit' => 'Poli Gigi',
-        ]);
-        Unit::create([
-            'nama_unit' => 'IGD',
-        ]);
-        Unit::create([
-            'nama_unit' => 'Poli Jantung',
-        ]);
+        // SettingTahun::create([
+        //     'tahun' => '2022',
+        //     'status' => '1',
+        // ]);
 
         // DetailJabatan::create([
         //     'id_karyawan' => 1,
@@ -85,93 +62,45 @@ class DatabaseSeeder extends Seeder
         //     'status' => '1',
         // ]);
 
-        DetailUnit::create([
-            'id_karyawan' => 1,
-            'id_unit' => 1,
-            'status' => '1',
-        ]);
-        DetailUnit::create([
-            'id_karyawan' => 2,
-            'id_unit' => 1,
-            'status' => '1',
-        ]);
-        DetailUnit::create([
-            'id_karyawan' => 3,
-            'id_unit' => 1,
-            'status' => '1',
-        ]);
+        // DetailUnit::create([
+        //     'id_karyawan' => 1,
+        //     'id_unit' => 1,
+        //     'status' => '1',
+        // ]);
+        // DetailUnit::create([
+        //     'id_karyawan' => 2,
+        //     'id_unit' => 1,
+        //     'status' => '1',
+        // ]);
+        // DetailUnit::create([
+        //     'id_karyawan' => 3,
+        //     'id_unit' => 1,
+        //     'status' => '1',
+        // ]);
 
-        Karyawan::create([
-            'nama' => "Alfad Sabil Haq",
-            'nik' => "123456789",
-            'id_jabatan' => 1,
-            'id_unit' => 1,
-            'tanggal_lahir' => "2002-03-07",
-            'status_kawin' => "Belum Kawin",
-            'alamat' => "Paiton",
-            'gender' => 'L',
-            'pendidikan' => 'S1',
-            'agama' => 'Islam',
-            'telepon' => '081234567890',
-            'username' => 'sabil',
-            'password' => Hash::make('123456')
-        ]);
+        // Shift::create([
+        //     'id_tahun' => '2',
+        //     'kode_shift' => "P-001",
+        //     'nama_shift' => "Pagi",
+        //     'jam_masuk' => "08:00",
+        //     'jam_keluar' => "12:00",
+        // ]);
 
-        Karyawan::create([
-            'nama' => "Siti Maimunah",
-            'nik' => "123456789",
-            'id_jabatan' => 2,
-            'id_unit' => 2,
-            'tanggal_lahir' => "2002-03-07",
-            'status_kawin' => "Belum Kawin",
-            'alamat' => "Paiton",
-            'gender' => 'P',
-            'pendidikan' => 'S1',
-            'agama' => 'Islam',
-            'telepon' => '081234567890',
-            'username' => 'munah',
-            'password' => Hash::make('123456')
-        ]);
+        // Shift::create([
+        //     'id_tahun' => '2',
+        //     'kode_shift' => "S-001",
+        //     'nama_shift' => "Siang",
+        //     'jam_masuk' => "13:00",
+        //     'jam_keluar' => "17:00",
+        // ]);
 
-        Karyawan::create([
-            'nama' => "Ahmad Dani",
-            'nik' => "123456789",
-            'id_jabatan' => 3,
-            'id_unit' => 3,
-            'tanggal_lahir' => "2002-02-02",
-            'status_kawin' => "Belum Kawin",
-            'alamat' => "Jl. Raya",
-            'gender' => 'L',
-            'pendidikan' => 'S1',
-            'agama' => 'Islam',
-            'telepon' => '081234567890',
-            'username' => 'dani',
-            'password' => Hash::make('123456')
-        ]);
-
-        Shift::create([
-            'id_tahun' => '2',
-            'kode_shift' => "P-001",
-            'nama_shift' => "Pagi",
-            'jam_masuk' => "08:00",
-            'jam_keluar' => "12:00",
-        ]);
-
-        Shift::create([
-            'id_tahun' => '2',
-            'kode_shift' => "S-001",
-            'nama_shift' => "Siang",
-            'jam_masuk' => "13:00",
-            'jam_keluar' => "17:00",
-        ]);
-
-        Shift::create([
-            'id_tahun' => '2',
-            'kode_shift' => "M-001",
-            'nama_shift' => "Malam",
-            'jam_masuk' => "18:00",
-            'jam_keluar' => "22:00",
-        ]);
+        // Shift::create([
+        //     'id_tahun' => '2',
+        //     'kode_shift' => "M-001",
+        //     'nama_shift' => "Malam",
+        //     'jam_masuk' => "18:00",
+        //     'jam_keluar' => "22:00",
+        // ]);
 
         // Jadwal::create([
         //     'id_karyawan' => '1',
@@ -187,35 +116,35 @@ class DatabaseSeeder extends Seeder
         //     'id_shift' => '1',
         // ]);
 
-        AturanPresensi::create([
-            'terlambat' => '15',
-            'status' => '1',
-            'denda' => '10000',
-        ]);
+        // AturanPresensi::create([
+        //     'terlambat' => '15',
+        //     'status' => '1',
+        //     'denda' => '10000',
+        // ]);
 
-        Gaji::create([
-            'id_unit' => '1',
-        ]);
+        // Gaji::create([
+        //     'id_unit' => '1',
+        // ]);
 
-        DetailGaji::create([
-            'id_gaji' => '1',
-            'id_jabatan' => '1',
-            'gaji' => '1500000',
-        ]);
+        // DetailGaji::create([
+        //     'id_gaji' => '1',
+        //     'id_jabatan' => '1',
+        //     'gaji' => '1500000',
+        // ]);
 
-        DetailGajiKaryawan::create([
-            'id_detail_gaji' => '1',
-            'id_karyawan' => '1',
-            'bulan' => '2022-06',
-            'denda' => '0',
-        ]);
+        // DetailGajiKaryawan::create([
+        //     'id_detail_gaji' => '1',
+        //     'id_karyawan' => '1',
+        //     'bulan' => '2022-06',
+        //     'denda' => '0',
+        // ]);
 
-        DetailGajiKaryawan::create([
-            'id_detail_gaji' => '1',
-            'id_karyawan' => '2',
-            'bulan' => '2022-06',
-            'denda' => '0',
-        ]);
+        // DetailGajiKaryawan::create([
+        //     'id_detail_gaji' => '1',
+        //     'id_karyawan' => '2',
+        //     'bulan' => '2022-06',
+        //     'denda' => '0',
+        // ]);
 
         User::create([
             'name' => 'Alfad Sabil Haq',

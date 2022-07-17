@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUnitsTable extends Migration
+class CreatePenugasanDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateUnitsTable extends Migration
      */
     public function up()
     {
-        Schema::create('units', function (Blueprint $table) {
-            $table->id('id_unit');
-            $table->string('nama_unit');
+        Schema::create('penugasan_details', function (Blueprint $table) {
+            $table->id('id_detail_penugasan');
+            $table->foreignId('id_penugasan');
+            $table->foreign('id_penugasan')->references('id_penugasan')->on('penugasans');
             $table->timestamp('lastupdate_user')->default(now());
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
@@ -29,6 +30,6 @@ class CreateUnitsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('units');
+        Schema::dropIfExists('penugasan_details');
     }
 }

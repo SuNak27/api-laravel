@@ -24,6 +24,7 @@ class CreateDetailJabatansTable extends Migration
             $table->foreignId('id_pangkat')->nullable();
             // $table->foreign('id_pangkat')->references('id_pangkat')->on('pangkat_golongans');
             $table->integer('lastupdate_user')->default(1);
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
     }

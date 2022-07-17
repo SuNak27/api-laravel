@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UnitSeeder::class);
         $this->call(JabatanSeeder::class);
         $this->call(KaryawanSeeder::class);
+        $this->call(DetailJabatanSeeder::class);
 
         // SettingTahun::create([
         //     'tahun' => '2021',

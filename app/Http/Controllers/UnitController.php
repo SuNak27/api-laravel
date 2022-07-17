@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,6 +19,7 @@ class UnitController extends Controller
     public function index()
     {
         $unit = Unit::join('users', 'units.lastupdate_user', 'users.id')->where('deleted_at', null)->select('units.id_unit', 'units.nama_unit', 'users.name as lastupdate_user')->get();
+
         $response = [
             'success' => true,
             'message' => 'Berhasil',

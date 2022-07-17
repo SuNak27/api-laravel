@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DetailJabatan;
 use Illuminate\Database\Seeder;
 
 class DetailJabatanSeeder extends Seeder
@@ -13,6 +14,11 @@ class DetailJabatanSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DetailJabatan::create([
+            'id_karyawan' => 1,
+            'id_jabatan' => 1,
+            'id_unit' => 1,
+            'id_pangkat' => 1,
+        ]);
     }
 }

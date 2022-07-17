@@ -26,12 +26,11 @@ class KaryawanController extends Controller
      */
     public function index()
     {
-        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+            ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-            ->orderBy('karyawans.id', 'asc')
+            ->orderBy('karyawans.id_karyawan', 'asc')
             ->get();
 
         $response = [
@@ -62,8 +61,8 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
-            'nik' => 'required|numeric',
+            'nik_karyawan' => 'required|numeric',
+            'nama_karyawan' => 'required',
             'id_jabatan' => 'required',
             'id_unit' => 'required',
             'tanggal_lahir' => 'required',
@@ -87,8 +86,8 @@ class KaryawanController extends Controller
         try {
 
             $data = [
-                'nama' => $request->nama,
-                'nik' => $request->nik,
+                'nama_karyawan' => $request->nama_karyawan,
+                'nik_karyawan' => $request->nik_karyawan,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'status_kawin' => $request->status_kawin,
                 'alamat' => $request->alamat,
@@ -96,7 +95,6 @@ class KaryawanController extends Controller
                 'pendidikan' => $request->pendidikan,
                 'telepon' => $request->telepon,
                 'agama' => $request->agama,
-                'username' => $request->username,
             ];
 
             if ($request->file('image')) {
@@ -104,32 +102,23 @@ class KaryawanController extends Controller
             }
 
             $karyawan = Karyawan::create($data);
+
             $detailJabatan = [
                 'id_jabatan' => $request->id_jabatan,
-                'id_karyawan' => $karyawan->id,
-                'status' => "1",
-            ];
-            $detailUnit = [
                 'id_unit' => $request->id_unit,
                 'id_karyawan' => $karyawan->id,
-                'status' => "1",
+                // Belum FIX (UPDATEABLE)
+                'id_pangkat' => 1,
+                'lastupdate_user' => 1,
             ];
 
-            $dJabatan = DetailJabatan::create($detailJabatan);
-            $dUnit = DetailUnit::create($detailUnit);
+            DetailJabatan::create($detailJabatan);
 
-            $newKaryawan = [
-                'id_jabatan' => $dJabatan->id,
-                'id_unit' => $dUnit->id,
-            ];
-            $karyawan->update($newKaryawan);
-
-            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-                ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-                ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+                ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
                 ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-                ->where('karyawans.id', $karyawan->id)->first();
+                ->where('karyawans.id_karyawan', $karyawan->id)->first();
 
             $response = [
                 'success' => true,

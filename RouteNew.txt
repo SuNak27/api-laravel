@@ -4,16 +4,16 @@ https://api-graha.belanj.id/public/api/karyawan --------> POST
 https://api-graha.belanj.id/public/api/karyawan/{:id} ------> GET
 https://api-graha.belanj.id/public/api/karyawan/{:id} ------> PUT
 {
-	     'nama' 	=> 'required',
-         'nik' 		=> 'required|numeric',
-         'id_jabatan' 	=> 'required',
-         'id_unit' 	=> 'required',
-         'tanggal_lahir'=> 'required',
-         'status_kawin' => 'required',
-         'alamat' 	=> 'required',
-         'gender' 	=> 'required',
-         'pendidikan' 	=> 'required',
-         'telepon' 	=> 'required|numeric'
+	     'nama_karyawan'     	=> 'required',
+         'nik_karyawan' 		=> 'required|numeric',
+         'id_jabatan' 	        => 'required',
+         'id_unit' 	            => 'required',
+         'tanggal_lahir'        => 'required',
+         'status_kawin'         => 'required',
+         'alamat' 	            => 'required',
+         'gender' 	            => 'required',
+         'pendidikan' 	        => 'required',
+         'telepon' 	            => 'required|numeric'
 }
 
 // Login Karyawan

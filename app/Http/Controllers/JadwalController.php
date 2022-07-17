@@ -23,10 +23,13 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        $jadwal = DetailUnit::join('units', 'detail_units.id_unit', '=', 'units.id')
-            ->select('detail_units.id_unit as id_unit', 'units.nama_unit', DB::raw('count(id_karyawan) as jumlah_karyawan'))
-            ->where('status', '1')
-            ->groupBy('id_unit')
+        $jadwal = Jadwal::join('karyawans', 'jadwals.id_karyawan', '=', 'karyawans.id')
+            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
+            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            ->join('setting_tahuns', 'jadwals.id_tahun', '=', 'setting_tahuns.id')
+            ->select('karyawans.nama as nama_karyawan', DB::raw("MONTH(jadwals.tanggal) as bulan"), "setting_tahuns.tahun")
+            ->where('setting_tahuns.status', '1')
+            ->groupBy('units.id', DB::raw("MONTH(jadwals.tanggal)"))
             ->get();
 
         $response = [

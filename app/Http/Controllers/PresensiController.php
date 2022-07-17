@@ -67,8 +67,18 @@ class PresensiController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
+        // if ($validator->fails()) {
+        //     return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        // }
 
         try {
 
@@ -93,47 +103,58 @@ class PresensiController extends Controller
             }
 
             if ($check != null) {
-                $shift = Shift::where('id', $request->id_shift)->first();
+                $checkHadir = Presensi::where('tanggal', $tanggal)->where('id_shift', $request->id_shift)->where('id_karyawan', $request->id_karyawan)->first();
+                if ($checkHadir == null) {
+                    $shift = Shift::where('id', $request->id_shift)->first();
 
-                $aturan = AturanPresensi::first();
-                $masuk = new Carbon($shift->jam_masuk);
+                    $aturan = AturanPresensi::first();
+                    $masuk = new Carbon($shift->jam_masuk);
 
-                if ($masuk->diffInMinutes($jam_masuk, false) > $aturan->terlambat) {
-                    if ($request->status) {
-                        $status = $request->status;
+                    if ($masuk->diffInMinutes($jam_masuk, false) > $aturan->terlambat) {
+                        if ($request->status) {
+                            $status = $request->status;
+                        } else {
+                            $status = "Telat";
+                        }
                     } else {
-                        $status = "Telat";
+                        if ($request->status) {
+                            $status = $request->status;
+                        } else {
+                            $status = "Hadir";
+                        }
                     }
+
+                    $data = [
+                        'id_karyawan' => $request->id_karyawan,
+                        'id_shift' => $request->id_shift,
+                        'tanggal' => $tanggal,
+                        'jam_masuk' => $jam_masuk,
+                        'jam_keluar' => $jam_keluar,
+                        'latitude' => $request->latitude,
+                        'longitude' => $request->longitude,
+                        'status' => $status,
+                        'mode_absen' => $request->mode_absen,
+                        'keterangan' => $request->keterangan
+                    ];
+
+                    $presensi = Presensi::create($data);
+
+                    $response = [
+                        'success' => true,
+                        'message' => 'Berhasil',
+                        'data' => $presensi
+                    ];
+
+                    return response()->json($response, Response::HTTP_CREATED);
                 } else {
-                    if ($request->status) {
-                        $status = $request->status;
-                    } else {
-                        $status = "Hadir";
-                    }
+                    $response = [
+                        'success' => false,
+                        'message' => 'Karyawan telah hadir pada hari dan shift saat ini',
+                        'data' => null
+                    ];
+
+                    return response()->json($response, Response::HTTP_BAD_REQUEST);
                 }
-
-                $data = [
-                    'id_karyawan' => $request->id_karyawan,
-                    'id_shift' => $request->id_shift,
-                    'tanggal' => $tanggal,
-                    'jam_masuk' => $jam_masuk,
-                    'jam_keluar' => $jam_keluar,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                    'status' => $status,
-                    'mode_absen' => $request->mode_absen,
-                    'keterangan' => $request->keterangan
-                ];
-
-                $presensi = Presensi::create($data);
-
-                $response = [
-                    'success' => true,
-                    'message' => 'Berhasil',
-                    'data' => $presensi
-                ];
-
-                return response()->json($response, Response::HTTP_CREATED);
             } else {
                 $response = [
                     'success' => false,
@@ -194,45 +215,140 @@ class PresensiController extends Controller
     {
         $presensi = Presensi::findOrFail($id);
 
+        $validator = Validator::make($request->all(), [
+            'id_karyawan' => 'required',
+            'mode_absen' => 'required',
+            'id_shift' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             if ($request->tanggal != null) {
                 $tanggal = $request->tanggal;
-                $jam_masuk = $request->jam_masuk;
+                $jam_masuk = date("H:i:s", strtotime($request->jam_masuk));
             } else {
                 $jam_masuk = gmdate('H:i:s', $request->jam + (7 * 60 * 60));
                 $tanggal = gmdate('Y-m-d', $request->jam + (7 * 60 * 60));
             }
 
+            $check = Jadwal::join('detail_jadwals', 'jadwals.id', '=', 'detail_jadwals.id_jadwal')
+                ->where('jadwals.id_karyawan', $request->id_karyawan)
+                ->where('jadwals.tanggal', $tanggal)
+                ->where('detail_jadwals.id_shift', $request->id_shift)
+                ->first();
+
             if ($request->jam_keluar == null) {
                 $jam_keluar = null;
             } else if (preg_match("/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/", $request->jam_keluar)) {
-                $jam_keluar = date("g:i A", strtotime($request->jam_keluar));;
+                $jam_keluar = date("H:i:s", strtotime($request->jam_keluar));;
             } else {
                 $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
             }
 
             // $jam_keluar = gmdate('H:i:s', $request->jam_keluar + (7 * 60 * 60));
-            $data = $request->all();
-            if ($request->jam_keluar) {
-                $data['jam_keluar'] = $jam_keluar;
+
+            if ($check != null) {
+
+                $checkHadir = Presensi::where('tanggal', $tanggal)->where('id_shift', $request->id_shift)->where('id_karyawan', $request->id_karyawan)->first();
+                if ($checkHadir == null) {
+                    // return ("belum hadir");
+                    $shift = Shift::where('id', $request->id_shift)->first();
+
+                    $aturan = AturanPresensi::first();
+                    $masuk = new Carbon($shift->jam_masuk);
+
+                    if ($masuk->diffInMinutes($jam_masuk, false) > $aturan->terlambat) {
+                        $data['status'] = "Telat";
+                    } else {
+                        $data['status'] = "Hadir";
+                    }
+
+                    $data = $request->all();
+                    if ($request->jam_keluar) {
+                        $data['jam_keluar'] = $jam_keluar;
+                    }
+
+                    if ($request->jam) {
+                        $data['jam_masuk'] = $jam_masuk;
+                        $data['tanggal'] = $tanggal;
+                        unset($data['jam']);
+                    }
+
+                    Presensi::where('id', $id)->update($data);
+
+                    $presensi = Presensi::find($id)->first();
+                    $response = [
+                        'success' => true,
+                        'message' => 'Berhasil',
+                        'data' => $presensi
+                    ];
+
+                    return response()->json($response, Response::HTTP_CREATED);
+                } else {
+                    if ($checkHadir->jam_masuk != $jam_masuk || $checkHadir->jam_keluar != $jam_keluar) {
+                        // return ([$checkHadir->jam_masuk, $jam_masuk, $checkHadir->jam_keluar, $jam_keluar]);
+
+                        $shift = Shift::where('id', $request->id_shift)->first();
+
+                        $aturan = AturanPresensi::first();
+                        $masuk = new Carbon($shift->jam_masuk);
+
+                        if ($masuk->diffInMinutes($jam_masuk, false) > $aturan->terlambat) {
+                            $data['status'] = "Telat";
+                        } else {
+                            $data['status'] = "Hadir";
+                        }
+
+                        $data = $request->all();
+                        if ($request->jam_keluar) {
+                            $data['jam_keluar'] = $jam_keluar;
+                        }
+
+                        if ($request->jam) {
+                            $data['jam_masuk'] = $jam_masuk;
+                            $data['tanggal'] = $tanggal;
+                            unset($data['jam']);
+                        }
+
+                        Presensi::where('id', $id)->update($data);
+
+                        $presensi = Presensi::find($id)->first();
+                        $response = [
+                            'success' => true,
+                            'message' => 'Berhasil',
+                            'data' => $presensi
+                        ];
+
+                        return response()->json($response, Response::HTTP_CREATED);
+                    } else {
+                        // return ("Sudah absen");
+                        $response = [
+                            'success' => false,
+                            'message' => 'Karyawan telah hadir pada hari dan shift saat ini',
+                            'data' => null
+                        ];
+
+                        return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+                    }
+                }
+            } else {
+                $response = [
+                    'success' => false,
+                    'message' => 'Jadwal tidak ditemukan',
+                    'data' => null
+                ];
+
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-
-            if ($request->jam) {
-                $data['jam_masuk'] = $jam_masuk;
-                $data['tanggal'] = $tanggal;
-                unset($data['jam']);
-            }
-
-            Presensi::where('id', $id)->update($data);
-
-            $presensi = Presensi::find($id)->first();
-            $response = [
-                'success' => true,
-                'message' => 'Berhasil',
-                'data' => $presensi
-            ];
-
-            return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
             return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -287,7 +403,6 @@ class PresensiController extends Controller
 
         $validator = Validator::make($request->all(), [
             'id_karyawan' => 'required',
-            'jam' => 'required',
             'mode_absen' => 'required',
             'id_shift' => 'required',
         ]);

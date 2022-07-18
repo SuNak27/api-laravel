@@ -24,8 +24,8 @@ class CreateKaryawansTable extends Migration
             $table->enum('pendidikan', ['SD/MI', 'SMP/MTs', 'SMA/MA', 'S1', 'S2', 'S3', 'Lainnya']);
             $table->string('agama');
             $table->string('telepon');
-            $table->string('username');
-            $table->string('password');
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
             $table->text('image')->nullable();
             $table->enum('status_aktif', ['Aktif', 'Resign'])->default('Aktif');
             $table->integer('jumlah_anak')->nullable();

@@ -183,11 +183,11 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $karyawan = Karyawan::findOrFail($id);
-        // dd($request->all());
+        $karyawan = Karyawan::where('id_karyawan', $id)->firstOrFail();
+
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
-            'nik' => 'required|numeric',
+            'nama_karyawan' => 'required',
+            'nik_karyawan' => 'required|numeric',
             'id_jabatan' => 'required',
             'id_unit' => 'required',
             'tanggal_lahir' => 'required',
@@ -203,10 +203,10 @@ class KaryawanController extends Controller
         }
 
         try {
-            $oldImage = $karyawan->image;
+            // $oldImage = $karyawan['image'];
             $data = [
-                'nama' => $request->nama,
-                'nik' => $request->nik,
+                'nik_karyawan' => $request->nik_karyawan,
+                'nama_karyawan' => $request->nama_karyawan,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'status_kawin' => $request->status_kawin,
                 'alamat' => $request->alamat,
@@ -217,56 +217,39 @@ class KaryawanController extends Controller
                 'username' => $request->username,
             ];
 
-            if ($request->file('image')) {
-                if ($request->image) {
-                    if ($oldImage != "") {
-                        Storage::delete('public/' . $oldImage);
-                    }
-                }
-                $data['image'] = $request->file('image')->store('karyawans', 'public');
-            }
+            // if ($request->file('image')) {
+            //     if ($request->image) {
+            //         if ($oldImage != "") {
+            //             Storage::delete('public/' . $oldImage);
+            //         }
+            //     }
+            //     $data['image'] = $request->file('image')->store('karyawans', 'public');
+            // }
 
 
             // dd($oldImage);
-            $karyawan->update($data);
+            Karyawan::where('id_karyawan', $id)->update($data);
 
-            $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
+            $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id_karyawan)->where('id_unit', $request->id_unit)->where('id_jabatan', $request->id_jabatan)->whereNull('deleted_at')->first();
 
-            if ($checkJabatan->id_jabatan != $request->id_jabatan) {
-                $checkJabatan->update(['status' => '0']);
-                $detailJabatan = [
-                    'id_jabatan' => $request->id_jabatan,
-                    'id_karyawan' => $karyawan->id,
-                    'status' => "1",
-                ];
-                $dJabatan = DetailJabatan::create($detailJabatan);
+            // return $checkJabatan;
 
-                $newKaryawan = [
-                    'id_jabatan' => $dJabatan['id'],
-                ];
-
-                $karyawan->update($newKaryawan);
+            if (!$checkJabatan) {
+                if ($checkJabatan->id_jabatan != (int)$request->id_jabatan || $checkJabatan->id_unit != (int)$request->id_unit || $checkJabatan->id_karyawan != (int)$karyawan->id_karyawan) {
+                    DetailJabatan::where('id_detail_jabatan', $checkJabatan->id_detail_jabatan)->update(['deleted_at' => now()]);
+                    $detailJabatan = [
+                        'id_jabatan' => $request->id_jabatan,
+                        'id_unit' => $request->id_unit,
+                        'id_karyawan' => $karyawan->id_karyawan,
+                        // Belum Fix (UPDATEABLE)
+                        'id_pangkat' => 1,
+                        'lastupdate_user' => 1,
+                    ];
+                    DetailJabatan::create($detailJabatan);
+                }
             }
 
-            $checkUnit = DetailUnit::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
-
-            if ($checkUnit->id_unit != $request->id_unit) {
-                $checkUnit->update([
-                    'status' => "0"
-                ]);
-                $detailUnit = [
-                    'id_unit' => $request->id_unit,
-                    'id_karyawan' => $karyawan->id,
-                    'status' => "1",
-                ];
-                $dUnit = DetailUnit::create($detailUnit);
-
-                $newKaryawan = [
-                    'id_unit' => $dUnit['id'],
-                ];
-
-                $karyawan->update($newKaryawan);
-            }
+            $karyawan = Karyawan::where('id_karyawan', $id)->firstOrFail();
 
             $response = [
                 'success' => true,

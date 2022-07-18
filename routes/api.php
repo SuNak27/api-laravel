@@ -6,6 +6,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\JenisIzinController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\LokasiController;
@@ -32,6 +33,22 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
+// Karyawan
+Route::resource('/karyawan', KaryawanController::class);
+
+// Jabatan
+Route::resource('/jabatan', JabatanController::class);
+
+// Unit
+Route::resource('/unit', UnitController::class);
+
+// Shift
+Route::resource('/shift', ShiftController::class);
+
+// Jenis Izin
+Route::resource('/jenis-izin', JenisIzinController::class);
+
+
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
 Route::post('/upload-jadwal', [JadwalController::class, 'uploadJadwal']);
 Route::get('/download-import-karyawan', [KaryawanController::class, 'downloadImportKaryawan']);
@@ -41,8 +58,8 @@ Route::get('/master-data', [MasterDataController::class, 'index']);
 
 Route::get('/admin', [AdminController::class, 'index']);
 
-// Karyawan
-Route::resource('/karyawan', KaryawanController::class);
+
+
 Route::post('/login/karyawan', [KaryawanController::class, 'login']);
 Route::get('/karyawanStatistic', [KaryawanController::class, 'statistic']);
 Route::get('/karyawanUnit/{id_unit}', [KaryawanController::class, 'karyawanUnit']);
@@ -65,19 +82,16 @@ Route::get('/presensi/karyawan/{id_karyawan}', [PresensiController::class, "kary
 Route::put('/presensis/{id}', [PresensiController::class, "updateWeb"]);
 Route::get('/presensis', [PresensiController::class, "rekap"]);
 
-// Shift
-Route::resource('/shift', ShiftController::class);
 
 // Setting Tahun
 Route::resource('/setting_tahun', SettingTahunController::class);
 Route::get('/setting_tahuns', [SettingTahunController::class, 'tahun_aktif']);
 
-// Jabatan
-Route::resource('/jabatan', JabatanController::class);
+
+
 Route::get('/jabatans/{id_karyawan}', [JabatanController::class, 'detailJabatan']);
 
-// Unit
-Route::resource('/unit', UnitController::class);
+
 
 // Gaji
 Route::resource('/gaji', GajiController::class);

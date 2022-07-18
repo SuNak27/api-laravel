@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shift extends Model
 {
     use HasFactory;
+
+    protected $guarded = ['id_shift'];
+    protected $primaryKey = 'id_shift';
 }

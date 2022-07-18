@@ -150,7 +150,7 @@ class KaryawanController extends Controller
         $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
             ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
             ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
-            ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
+            ->select('karyawans.*', 'detail_jabatans.id_unit', 'detail_jabatans.id_jabatan', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
             ->where('karyawans.id_karyawan', $id)->first();
 
 

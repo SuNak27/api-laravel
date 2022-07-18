@@ -9,5 +9,6 @@ class Unit extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id_unit'];
+    protected $primaryKey = 'id_unit';
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\PerdinController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingPresensiController;
@@ -47,6 +48,9 @@ Route::resource('/shift', ShiftController::class);
 
 // Jenis Izin
 Route::resource('/jenis-izin', JenisIzinController::class);
+
+// Pangkat Golongan
+Route::resource('/pangkat', PangkatGolonganController::class);
 
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);

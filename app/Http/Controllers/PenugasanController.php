@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailJabatan;
-use App\Models\Jabatan;
-use App\Models\Unit;
+use App\Models\Penugasan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class JabatanController extends Controller
+class PenugasanController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,13 +17,17 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatan = Jabatan::join('users', 'jabatans.lastupdate_user', 'users.id')->where('deleted_at', null)->select('jabatans.id_jabatan', 'jabatans.nama_jabatan', 'users.name as lastupdate_user')->get();
+        $penugasan = Penugasan::join('users', 'users.id', '=', 'penugasans.lastupdate_user')
+            ->where('deleted_at', null)
+            ->select('penugasans.*', 'users.name')
+            ->get();
 
         $response = [
             'success' => true,
-            'message' => 'Berhasil',
-            'data' => $jabatan
+            'message' => 'Success',
+            'data' => $penugasan
         ];
+
         return response()->json($response, Response::HTTP_OK);
     }
 
@@ -48,7 +50,11 @@ class JabatanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'id_karyawan' => 'required',
+            'tujuan' => 'required',
+            'kegiatan' => 'required',
+            'tanggal_mulai' => 'required',
+            'tanggal_akhir' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -64,11 +70,22 @@ class JabatanController extends Controller
             // Last Update User (UPDATABLE)
             $request['lastupdate_user'] = 1;
 
-            $jabatan = Jabatan::create($request->all());
+            $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+
+            if ($checkTanggalMulai) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sudah mengajukan penugasan pada tanggal tersebut',
+                    'data' => $checkTanggalMulai
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $penugasan = Penugasan::create($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $jabatan
+                'data' => $penugasan
             ];
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
@@ -83,10 +100,10 @@ class JabatanController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Penugasan  $penugasan
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Penugasan $penugasan)
     {
         //
     }
@@ -94,10 +111,10 @@ class JabatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Penugasan  $penugasan
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Penugasan $penugasan)
     {
         //
     }
@@ -106,15 +123,19 @@ class JabatanController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Penugasan  $penugasan
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $jabatan = Jabatan::findOrFail($id);
+        $penugasan = Penugasan::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'id_karyawan' => 'required',
+            'tujuan' => 'required',
+            'kegiatan' => 'required',
+            'tanggal_mulai' => 'required',
+            'tanggal_akhir' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -131,13 +152,39 @@ class JabatanController extends Controller
             // Last Update User (UPDATABLE)
             $request['lastupdate_user'] = 1;
 
-            $jabatan->update($request->all());
+            $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+
+            if ($checkTanggalMulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sudah mengajukan penugasan pada tanggal tersebut',
+                    'data' => $checkTanggalMulai
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $checkPenugasan = Penugasan::where('id_karyawan', $request->id_karyawan)
+                ->whereDate('tanggal_mulai', '<=', $request->tanggal_mulai)
+                ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('deleted_at', null)
+                ->first();
+
+            if ($penugasan->tanggal_mulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sedang mengajukan penugasan pada rentang tanggal tersebut',
+                    'data' => $checkPenugasan
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $penugasan->update($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $jabatan
+                'data' => $penugasan
             ];
-            return response()->json($response, Response::HTTP_CREATED);
+            return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,
@@ -150,69 +197,11 @@ class JabatanController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Penugasan  $penugasan
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Penugasan $penugasan)
     {
         //
-    }
-
-    public function downloadJabatan()
-    {
-        $fileName = 'jabatan.csv';
-        $jabatan = Jabatan::all();
-
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-        );
-
-        $columns = array('ID', 'Nama Jabatan');
-
-        $callback = function () use ($jabatan, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($jabatan as $task) {
-                $row['ID']  = $task->id;
-                $row['Nama Jabatan']  = $task->nama_jabatan;
-
-                fputcsv($file, array($row['ID'], $row['Nama Jabatan']));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    // Belum terpakai
-    public function detailJabatan($id_karyawan)
-    {
-        // $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-        //     ->select('detail_jabatans.id_jabatan')
-        //     ->where('id_karyawan', $id_karyawan)
-        //     ->where('status', '1')
-        //     ->first();
-
-        $unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
-            ->select('detail_units.id_unit')
-            ->where('id_karyawan', $id_karyawan)
-            ->where('status', '1')
-            ->first();
-
-        // $detail = [
-        //     'id_jabatan' => $jabatan->id_jabatan,
-        //     'id_unit' => $unit->id_unit
-        // ];
-
-
-        // $response = [
-        //     'success' => true,
-        //     'message' => 'Berhasil',
-        //     'data' => $detail
-        // ];
-        // return response()->json($response, Response::HTTP_OK);
     }
 }

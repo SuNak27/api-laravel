@@ -15,14 +15,14 @@ class CreatePenugasansTable extends Migration
     {
         Schema::create('penugasans', function (Blueprint $table) {
             $table->id('id_penugasan');
-            $table->date('tanggal_pengajuan');
+            $table->date('tanggal_pengajuan')->default(now());
             $table->foreignId('id_karyawan');
             $table->foreign('id_karyawan')->references('id_karyawan')->on('karyawans');
             $table->string('tujuan');
             $table->string('kegiatan');
             $table->date('tanggal_mulai');
             $table->date('tanggal_akhir');
-            $table->integer('jumlah_menit');
+            $table->integer('jumlah_menit')->nullable();
             $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();

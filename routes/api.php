@@ -12,6 +12,7 @@ use App\Http\Controllers\LemburController;
 use App\Http\Controllers\LokasiController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PangkatGolonganController;
+use App\Http\Controllers\PenugasanController;
 use App\Http\Controllers\PerdinController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\SettingPresensiController;
@@ -51,6 +52,9 @@ Route::resource('/jenis-izin', JenisIzinController::class);
 
 // Pangkat Golongan
 Route::resource('/pangkat', PangkatGolonganController::class);
+
+// Penugasan
+Route::resource('/penugasan', PenugasanController::class);
 
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);

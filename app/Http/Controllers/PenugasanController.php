@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penugasan;
+use App\Models\PenugasanDetail;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,9 +18,11 @@ class PenugasanController extends Controller
      */
     public function index()
     {
-        $penugasan = Penugasan::join('users', 'users.id', '=', 'penugasans.lastupdate_user')
-            ->where('deleted_at', null)
-            ->select('penugasans.*', 'users.name')
+        $penugasan = Penugasan::join('karyawans', 'penugasans.id_karyawan', 'karyawans.id_karyawan')
+            ->join('penugasan_details', 'penugasans.id_penugasan', '=', 'penugasan_details.id_penugasan')
+            ->join('users', 'users.id', '=', 'penugasans.lastupdate_user')
+            ->where('penugasans.deleted_at', null)
+            ->select('penugasans.*', 'karyawans.nama_karyawan', 'penugasan_details.*', 'users.name as lastupdate_user')
             ->get();
 
         $response = [
@@ -81,7 +84,27 @@ class PenugasanController extends Controller
                 return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
+            $checkPenugasan = Penugasan::where('id_karyawan', $request->id_karyawan)
+                ->whereDate('tanggal_mulai', '<=', $request->tanggal_mulai)
+                ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('deleted_at', null)
+                ->first();
+
+            if ($checkPenugasan) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sedang mengajukan penugasan pada rentang tanggal tersebut',
+                    'data' => $checkPenugasan
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             $penugasan = Penugasan::create($request->all());
+
+            PenugasanDetail::create([
+                'id_penugasan' => $penugasan->id_penugasan,
+                'status' => 'Proses',
+            ]);
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
@@ -130,13 +153,19 @@ class PenugasanController extends Controller
     {
         $penugasan = Penugasan::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'id_karyawan' => 'required',
-            'tujuan' => 'required',
-            'kegiatan' => 'required',
-            'tanggal_mulai' => 'required',
-            'tanggal_akhir' => 'required',
-        ]);
+        if ($request->has('status')) {
+            $validator = Validator::make($request->all(), [
+                'status' => 'required',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'id_karyawan' => 'required',
+                'tujuan' => 'required',
+                'kegiatan' => 'required',
+                'tanggal_mulai' => 'required',
+                'tanggal_akhir' => 'required',
+            ]);
+        }
 
         if ($validator->fails()) {
             $error = $validator->errors()->first();
@@ -152,39 +181,60 @@ class PenugasanController extends Controller
             // Last Update User (UPDATABLE)
             $request['lastupdate_user'] = 1;
 
-            $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+            if ($request->has('status')) {
+                PenugasanDetail::where('id_penugasan', $id)->update([
+                    'status' => $request->status,
+                    'keterangan_acc' => $request->keterangan_acc,
+                ]);
 
-            if ($checkTanggalMulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
-                $response = [
-                    'success' => false,
-                    'message' => 'Karyawan sudah mengajukan penugasan pada tanggal tersebut',
-                    'data' => $checkTanggalMulai
-                ];
-                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+                $penugasan = Penugasan::join('penugasan_details', 'penugasans.id_penugasan', '=', 'penugasan_details.id_penugasan')
+                    ->where('penugasans.id_penugasan', $id)
+                    ->select('penugasans.*', 'penugasan_details.status', 'penugasan_details.keterangan_acc')
+                    ->first();
+            } else {
+                $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+
+                if ($checkTanggalMulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
+                    $response = [
+                        'success' => false,
+                        'message' => 'Karyawan sudah mengajukan penugasan pada tanggal tersebut',
+                        'data' => $checkTanggalMulai
+                    ];
+                    return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                $checkPenugasan = Penugasan::where('id_karyawan', $request->id_karyawan)
+                    ->whereDate('tanggal_mulai', '<=', $request->tanggal_mulai)
+                    ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                    ->where('id_penugasan', '!=', $id)
+                    ->where('deleted_at', null)
+                    ->first();
+
+                if ($checkPenugasan) {
+                    $response = [
+                        'success' => false,
+                        'message' => 'Karyawan sedang mengajukan penugasan pada rentang tanggal tersebut',
+                        'data' => $checkPenugasan
+                    ];
+                    return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+                }
+
+                if ($request->status || $request->keterangan_acc) {
+                    PenugasanDetail::where('id_penugasan', $id)->update([
+                        'status' => $request->status,
+                        'keterangan_acc' => $request->keterangan_acc,
+                    ]);
+                }
+
+                $penugasan->update($request->all());
             }
 
-            $checkPenugasan = Penugasan::where('id_karyawan', $request->id_karyawan)
-                ->whereDate('tanggal_mulai', '<=', $request->tanggal_mulai)
-                ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
-                ->where('deleted_at', null)
-                ->first();
-
-            if ($penugasan->tanggal_mulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
-                $response = [
-                    'success' => false,
-                    'message' => 'Karyawan sedang mengajukan penugasan pada rentang tanggal tersebut',
-                    'data' => $checkPenugasan
-                ];
-                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $penugasan->update($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
                 'data' => $penugasan
             ];
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

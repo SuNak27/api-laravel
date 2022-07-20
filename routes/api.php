@@ -15,6 +15,7 @@ use App\Http\Controllers\PangkatGolonganController;
 use App\Http\Controllers\PenugasanController;
 use App\Http\Controllers\PerdinController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\RegistrasiDokterController;
 use App\Http\Controllers\SettingPresensiController;
 use App\Http\Controllers\SettingTahunController;
 use App\Http\Controllers\ShiftController;
@@ -55,6 +56,9 @@ Route::resource('/pangkat', PangkatGolonganController::class);
 
 // Penugasan
 Route::resource('/penugasan', PenugasanController::class);
+
+// Registrasi Dokter
+Route::resource('/registrasi-dokter', RegistrasiDokterController::class);
 
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);

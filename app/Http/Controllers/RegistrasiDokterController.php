@@ -171,7 +171,7 @@ class RegistrasiDokterController extends Controller
                 'message' => 'Berhasil',
                 'data' => $registrasi
             ];
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

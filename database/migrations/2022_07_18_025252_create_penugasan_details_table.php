@@ -17,6 +17,8 @@ class CreatePenugasanDetailsTable extends Migration
             $table->id('id_detail_penugasan');
             $table->foreignId('id_penugasan');
             $table->foreign('id_penugasan')->references('id_penugasan')->on('penugasans');
+            $table->enum('status', ['Proses', 'Disetujui', 'Ditolak']);
+            $table->text('keterangan_acc')->nullable();
             $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();

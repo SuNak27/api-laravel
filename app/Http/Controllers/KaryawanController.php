@@ -26,12 +26,11 @@ class KaryawanController extends Controller
      */
     public function index()
     {
-        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->join('units', 'detail_units.id_unit', '=', 'units.id')
+        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+            ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
             ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-            ->orderBy('karyawans.id', 'asc')
+            ->orderBy('karyawans.id_karyawan', 'asc')
             ->get();
 
         $response = [
@@ -62,8 +61,8 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
-            'nik' => 'required|numeric',
+            'nik_karyawan' => 'required|numeric',
+            'nama_karyawan' => 'required',
             'id_jabatan' => 'required',
             'id_unit' => 'required',
             'tanggal_lahir' => 'required',
@@ -87,8 +86,8 @@ class KaryawanController extends Controller
         try {
 
             $data = [
-                'nama' => $request->nama,
-                'nik' => $request->nik,
+                'nama_karyawan' => $request->nama_karyawan,
+                'nik_karyawan' => $request->nik_karyawan,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'status_kawin' => $request->status_kawin,
                 'alamat' => $request->alamat,
@@ -96,7 +95,6 @@ class KaryawanController extends Controller
                 'pendidikan' => $request->pendidikan,
                 'telepon' => $request->telepon,
                 'agama' => $request->agama,
-                'username' => $request->username,
             ];
 
             if ($request->file('image')) {
@@ -104,32 +102,23 @@ class KaryawanController extends Controller
             }
 
             $karyawan = Karyawan::create($data);
+
             $detailJabatan = [
                 'id_jabatan' => $request->id_jabatan,
-                'id_karyawan' => $karyawan->id,
-                'status' => "1",
-            ];
-            $detailUnit = [
                 'id_unit' => $request->id_unit,
                 'id_karyawan' => $karyawan->id,
-                'status' => "1",
+                // Belum FIX (UPDATEABLE)
+                'id_pangkat' => 1,
+                'lastupdate_user' => 1,
             ];
 
-            $dJabatan = DetailJabatan::create($detailJabatan);
-            $dUnit = DetailUnit::create($detailUnit);
+            DetailJabatan::create($detailJabatan);
 
-            $newKaryawan = [
-                'id_jabatan' => $dJabatan->id,
-                'id_unit' => $dUnit->id,
-            ];
-            $karyawan->update($newKaryawan);
-
-            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-                ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-                ->join('units', 'detail_units.id_unit', '=', 'units.id')
+            $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+                ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+                ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
                 ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-                ->where('karyawans.id', $karyawan->id)->first();
+                ->where('karyawans.id_karyawan', $karyawan->id)->first();
 
             $response = [
                 'success' => true,
@@ -158,19 +147,17 @@ class KaryawanController extends Controller
      */
     public function show($id)
     {
-        $admin = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->leftJoin('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->join('detail_units', 'karyawans.id_unit', '=', 'detail_units.id')
-            ->leftJoin('units', 'detail_units.id_unit', '=', 'units.id')
-            ->select('karyawans.*', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
-            ->where('karyawans.id', $id)
-            ->first();
+        $karyawan = Karyawan::join('detail_jabatans', 'karyawans.id_karyawan', '=', 'detail_jabatans.id_karyawan')
+            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id_jabatan')
+            ->join('units', 'detail_jabatans.id_unit', '=', 'units.id_unit')
+            ->select('karyawans.*', 'detail_jabatans.id_unit', 'detail_jabatans.id_jabatan', 'jabatans.nama_jabatan as jabatan', 'units.nama_unit as unit')
+            ->where('karyawans.id_karyawan', $id)->first();
 
 
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $admin
+            'data' => $karyawan
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -196,11 +183,11 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $karyawan = Karyawan::findOrFail($id);
-        // dd($request->all());
+        $karyawan = Karyawan::where('id_karyawan', $id)->firstOrFail();
+
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
-            'nik' => 'required|numeric',
+            'nama_karyawan' => 'required',
+            'nik_karyawan' => 'required|numeric',
             'id_jabatan' => 'required',
             'id_unit' => 'required',
             'tanggal_lahir' => 'required',
@@ -216,10 +203,10 @@ class KaryawanController extends Controller
         }
 
         try {
-            $oldImage = $karyawan->image;
+            // $oldImage = $karyawan['image'];
             $data = [
-                'nama' => $request->nama,
-                'nik' => $request->nik,
+                'nik_karyawan' => $request->nik_karyawan,
+                'nama_karyawan' => $request->nama_karyawan,
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'status_kawin' => $request->status_kawin,
                 'alamat' => $request->alamat,
@@ -230,56 +217,36 @@ class KaryawanController extends Controller
                 'username' => $request->username,
             ];
 
-            if ($request->file('image')) {
-                if ($request->image) {
-                    if ($oldImage != "") {
-                        Storage::delete('public/' . $oldImage);
-                    }
-                }
-                $data['image'] = $request->file('image')->store('karyawans', 'public');
-            }
+            // if ($request->file('image')) {
+            //     if ($request->image) {
+            //         if ($oldImage != "") {
+            //             Storage::delete('public/' . $oldImage);
+            //         }
+            //     }
+            //     $data['image'] = $request->file('image')->store('karyawans', 'public');
+            // }
 
 
             // dd($oldImage);
-            $karyawan->update($data);
+            Karyawan::where('id_karyawan', $id)->update($data);
 
-            $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
+            $checkJabatan = DetailJabatan::where('id_karyawan', $karyawan->id_karyawan)->where('deleted_at', null)->first();
 
-            if ($checkJabatan->id_jabatan != $request->id_jabatan) {
-                $checkJabatan->update(['status' => '0']);
+
+            if ($checkJabatan->id_jabatan != (int)$request->id_jabatan || $checkJabatan->id_unit != (int)$request->id_unit) {
+                DetailJabatan::where('id_detail_jabatan', $checkJabatan->id_detail_jabatan)->update(['deleted_at' => now()]);
                 $detailJabatan = [
                     'id_jabatan' => $request->id_jabatan,
-                    'id_karyawan' => $karyawan->id,
-                    'status' => "1",
-                ];
-                $dJabatan = DetailJabatan::create($detailJabatan);
-
-                $newKaryawan = [
-                    'id_jabatan' => $dJabatan['id'],
-                ];
-
-                $karyawan->update($newKaryawan);
-            }
-
-            $checkUnit = DetailUnit::where('id_karyawan', $karyawan->id)->where('status', '1')->first();
-
-            if ($checkUnit->id_unit != $request->id_unit) {
-                $checkUnit->update([
-                    'status' => "0"
-                ]);
-                $detailUnit = [
                     'id_unit' => $request->id_unit,
-                    'id_karyawan' => $karyawan->id,
-                    'status' => "1",
+                    'id_karyawan' => $karyawan->id_karyawan,
+                    // Belum Fix (UPDATEABLE)
+                    'id_pangkat' => 1,
+                    'lastupdate_user' => 1,
                 ];
-                $dUnit = DetailUnit::create($detailUnit);
-
-                $newKaryawan = [
-                    'id_unit' => $dUnit['id'],
-                ];
-
-                $karyawan->update($newKaryawan);
+                DetailJabatan::create($detailJabatan);
             }
+
+            $karyawan = Karyawan::where('id_karyawan', $id)->firstOrFail();
 
             $response = [
                 'success' => true,
@@ -352,38 +319,38 @@ class KaryawanController extends Controller
         }
     }
 
-    public function statistic()
-    {
-        $jabatan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
-            ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-            ->select("jabatans.nama_jabatan as name", DB::raw('count(jabatans.id) as value'))
-            ->groupBy('jabatans.id')
-            ->get();
+    // public function statistic()
+    // {
+    //     $jabatan = Karyawan::join('detail_jabatans', 'karyawans.id_jabatan', '=', 'detail_jabatans.id')
+    //         ->join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
+    //         ->select("jabatans.nama_jabatan as name", DB::raw('count(jabatans.id) as value'))
+    //         ->groupBy('jabatans.id')
+    //         ->get();
 
-        $gender = Karyawan::select("gender as name", DB::raw('count(gender) as value'))
-            ->groupBy('gender')
-            ->get();
+    //     $gender = Karyawan::select("gender as name", DB::raw('count(gender) as value'))
+    //         ->groupBy('gender')
+    //         ->get();
 
-        $tanggal = date("Y-m-d");
+    //     $tanggal = date("Y-m-d");
 
-        $jadwal = Jadwal::select(DB::raw('count(jadwals.id_karyawan) as jadwal_hari_ini'))->where('jadwals.tanggal', $tanggal)->first();
+    //     $jadwal = Jadwal::select(DB::raw('count(jadwals.id_karyawan) as jadwal_hari_ini'))->where('jadwals.tanggal', $tanggal)->first();
 
-        $presensi = Presensi::select(DB::raw('count(id) as hadir_hari_ini'))->where('tanggal', $tanggal)->first();
+    //     $presensi = Presensi::select(DB::raw('count(id) as hadir_hari_ini'))->where('tanggal', $tanggal)->first();
 
-        $jumlah_jadwal = new stdClass();
-        $jumlah_jadwal->jadwal = $jadwal->jadwal_hari_ini;
-        $jumlah_jadwal->hadir = $presensi->hadir_hari_ini;
+    //     $jumlah_jadwal = new stdClass();
+    //     $jumlah_jadwal->jadwal = $jadwal->jadwal_hari_ini;
+    //     $jumlah_jadwal->hadir = $presensi->hadir_hari_ini;
 
-        $response = [
-            "success" => true,
-            "message" => "Berhasil",
-            "jumlah_jabatan" => $jabatan,
-            "jumlah_karyawan" => $gender,
-            "jumlah_jadwal" => $jumlah_jadwal
-        ];
+    //     $response = [
+    //         "success" => true,
+    //         "message" => "Berhasil",
+    //         "jumlah_jabatan" => $jabatan,
+    //         "jumlah_karyawan" => $gender,
+    //         "jumlah_jadwal" => $jumlah_jadwal
+    //     ];
 
-        return response()->json($response, Response::HTTP_OK);
-    }
+    //     return response()->json($response, Response::HTTP_OK);
+    // }
 
     public function karyawanUnit($id_unit)
     {
@@ -401,95 +368,95 @@ class KaryawanController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-    public function uploadKaryawan(Request $request)
-    {
-        $file = $request->file('uploaded_file');
-        if ($file) {
-            $filename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension(); //Get extension of uploaded file
-            $tempPath = $file->getRealPath();
-            $fileSize = $file->getSize(); //Get size of uploaded file in bytes
-            //Check for file extension and size
-            $this->checkUploadedFileProperties($extension, $fileSize);
-            //Where uploaded file will be stored on the server
-            $location = 'uploads'; //Created an "uploads" folder for that
-            // Upload file
-            $file->move($location, $filename);
-            // In case the uploaded file path is to be stored in the database
-            $filepath = public_path($location . "/" . $filename);
-            // Reading file
-            $file = fopen($filepath, "r");
-            $importData_arr = array(); // Read through the file and store the contents as an array
-            $i = 0;
-            //Read the contents of the uploaded file
-            while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
-                $num = count($filedata);
-                // Skip first row (Remove below comment if you want to skip the first row)
-                if ($i == 0) {
-                    $i++;
-                    continue;
-                }
-                for ($c = 0; $c < $num; $c++) {
-                    $importData_arr[$i][] = $filedata[$c];
-                }
-                $i++;
-            }
-            fclose($file); //Close after reading
-            $j = 0;
-            foreach ($importData_arr as $importData) {
-                $j++;
-                try {
-                    DB::beginTransaction();
-                    $data = [
-                        'id_unit' => $importData[0],
-                        'id_jabatan' => $importData[1],
-                        'nama' => $importData[2],
-                        'nik' => $importData[3],
-                        'tanggal_lahir' => $importData[4],
-                        'status_kawin' => $importData[5],
-                        'alamat' => $importData[6],
-                        'gender' => $importData[7],
-                        'pendidikan' => $importData[8],
-                        'telepon' => $importData[9],
-                        'agama' => $importData[10],
-                        'username' => $importData[11],
-                    ];
-                    $tanggalLahir = Carbon::parse($data['tanggal_lahir']);
-                    $data['tanggal_lahir'] = $tanggalLahir->format('Y-m-d');
-                    $karyawan = Karyawan::create($data);
-                    $detailJabatan = [
-                        'id_jabatan' => $data['id_jabatan'],
-                        'id_karyawan' => $karyawan->id,
-                        'status' => "1",
-                    ];
-                    $detailUnit = [
-                        'id_unit' => $data['id_unit'],
-                        'id_karyawan' => $karyawan->id,
-                        'status' => "1",
-                    ];
+    // public function uploadKaryawan(Request $request)
+    // {
+    //     $file = $request->file('uploaded_file');
+    //     if ($file) {
+    //         $filename = $file->getClientOriginalName();
+    //         $extension = $file->getClientOriginalExtension(); //Get extension of uploaded file
+    //         $tempPath = $file->getRealPath();
+    //         $fileSize = $file->getSize(); //Get size of uploaded file in bytes
+    //         //Check for file extension and size
+    //         $this->checkUploadedFileProperties($extension, $fileSize);
+    //         //Where uploaded file will be stored on the server
+    //         $location = 'uploads'; //Created an "uploads" folder for that
+    //         // Upload file
+    //         $file->move($location, $filename);
+    //         // In case the uploaded file path is to be stored in the database
+    //         $filepath = public_path($location . "/" . $filename);
+    //         // Reading file
+    //         $file = fopen($filepath, "r");
+    //         $importData_arr = array(); // Read through the file and store the contents as an array
+    //         $i = 0;
+    //         //Read the contents of the uploaded file
+    //         while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
+    //             $num = count($filedata);
+    //             // Skip first row (Remove below comment if you want to skip the first row)
+    //             if ($i == 0) {
+    //                 $i++;
+    //                 continue;
+    //             }
+    //             for ($c = 0; $c < $num; $c++) {
+    //                 $importData_arr[$i][] = $filedata[$c];
+    //             }
+    //             $i++;
+    //         }
+    //         fclose($file); //Close after reading
+    //         $j = 0;
+    //         foreach ($importData_arr as $importData) {
+    //             $j++;
+    //             try {
+    //                 DB::beginTransaction();
+    //                 $data = [
+    //                     'id_unit' => $importData[0],
+    //                     'id_jabatan' => $importData[1],
+    //                     'nama' => $importData[2],
+    //                     'nik' => $importData[3],
+    //                     'tanggal_lahir' => $importData[4],
+    //                     'status_kawin' => $importData[5],
+    //                     'alamat' => $importData[6],
+    //                     'gender' => $importData[7],
+    //                     'pendidikan' => $importData[8],
+    //                     'telepon' => $importData[9],
+    //                     'agama' => $importData[10],
+    //                     'username' => $importData[11],
+    //                 ];
+    //                 $tanggalLahir = Carbon::parse($data['tanggal_lahir']);
+    //                 $data['tanggal_lahir'] = $tanggalLahir->format('Y-m-d');
+    //                 $karyawan = Karyawan::create($data);
+    //                 $detailJabatan = [
+    //                     'id_jabatan' => $data['id_jabatan'],
+    //                     'id_karyawan' => $karyawan->id,
+    //                     'status' => "1",
+    //                 ];
+    //                 $detailUnit = [
+    //                     'id_unit' => $data['id_unit'],
+    //                     'id_karyawan' => $karyawan->id,
+    //                     'status' => "1",
+    //                 ];
 
-                    $dJabatan = DetailJabatan::create($detailJabatan);
-                    $dUnit = DetailUnit::create($detailUnit);
+    //                 $dJabatan = DetailJabatan::create($detailJabatan);
+    //                 $dUnit = DetailUnit::create($detailUnit);
 
-                    $newKaryawan = [
-                        'id_jabatan' => $dJabatan->id,
-                        'id_unit' => $dUnit->id,
-                    ];
-                    $karyawan->update($newKaryawan);
-                    DB::commit();
-                } catch (\Exception $e) {
-                    //throw $th;
-                    DB::rollBack();
-                }
-            }
-            return response()->json([
-                'message' => "$j records successfully uploaded"
-            ], Response::HTTP_CREATED);
-        } else {
-            //no file was uploaded
-            throw new \Exception('No file was uploaded', Response::HTTP_BAD_REQUEST);
-        }
-    }
+    //                 $newKaryawan = [
+    //                     'id_jabatan' => $dJabatan->id,
+    //                     'id_unit' => $dUnit->id,
+    //                 ];
+    //                 $karyawan->update($newKaryawan);
+    //                 DB::commit();
+    //             } catch (\Exception $e) {
+    //                 //throw $th;
+    //                 DB::rollBack();
+    //             }
+    //         }
+    //         return response()->json([
+    //             'message' => "$j records successfully uploaded"
+    //         ], Response::HTTP_CREATED);
+    //     } else {
+    //         //no file was uploaded
+    //         throw new \Exception('No file was uploaded', Response::HTTP_BAD_REQUEST);
+    //     }
+    // }
     public function checkUploadedFileProperties($extension, $fileSize)
     {
         $valid_extension = array("csv", "xlsx"); //Only want csv and excel files

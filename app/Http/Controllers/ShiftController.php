@@ -17,7 +17,7 @@ class ShiftController extends Controller
      */
     public function index()
     {
-        $shift = Shift::join("setting_tahuns", "shifts.id_tahun", "=", "setting_tahuns.id")->select("shifts.*", "setting_tahuns.tahun", "setting_tahuns.status")->get();
+        $shift = Shift::where('deleted_at', null)->get();
 
         $response = [
             'success' => true,
@@ -54,7 +54,13 @@ class ShiftController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,7 +18,8 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $unit = Unit::all();
+        $unit = Unit::join('users', 'units.lastupdate_user', 'users.id')->where('deleted_at', null)->select('units.id_unit', 'units.nama_unit', 'users.name as lastupdate_user')->get();
+
         $response = [
             'success' => true,
             'message' => 'Berhasil',
@@ -45,7 +47,7 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'nama_unit' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -59,6 +61,9 @@ class UnitController extends Controller
         }
 
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $unit = Unit::create($request->all());
             $response = [
                 'success' => true,
@@ -107,8 +112,11 @@ class UnitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $unit = Unit::findOrFail($id);
+        $unit = Unit::where('id_unit', $id)->firstOrFail();
         try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
             $unit->update($request->all());
             $response = [
                 'success' => true,

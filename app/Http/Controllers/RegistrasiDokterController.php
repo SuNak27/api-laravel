@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DetailJabatan;
-use App\Models\Jabatan;
-use App\Models\Unit;
+use App\Models\RegistrasiDokter;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class JabatanController extends Controller
+class RegistrasiDokterController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,12 +17,16 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatan = Jabatan::join('users', 'jabatans.lastupdate_user', 'users.id')->where('jabatans.deleted_at', null)->select('jabatans.id_jabatan', 'jabatans.nama_jabatan', 'users.name as lastupdate_user')->get();
+        $registrasi = RegistrasiDokter::join('users', 'registrasi_dokters.lastupdate_user', 'users.id')
+            ->join('karyawans', 'registrasi_dokters.id_karyawan', 'karyawans.id_karyawan')
+            ->where('registrasi_dokters.deleted_at', null)
+            ->select('registrasi_dokters.*', 'karyawans.nama_karyawan', 'users.name as lastupdate_user')
+            ->get();
 
         $response = [
             'success' => true,
             'message' => 'Berhasil',
-            'data' => $jabatan
+            'data' => $registrasi
         ];
         return response()->json($response, Response::HTTP_OK);
     }
@@ -48,7 +50,10 @@ class JabatanController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'id_karyawan' => 'required',
+            'no_str' => 'required',
+            'tanggal_awal' => 'required',
+            'tanggal_akhir' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -60,15 +65,28 @@ class JabatanController extends Controller
             ];
             return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        try {
-            // Last Update User (UPDATABLE)
-            $request['lastupdate_user'] = 1;
 
-            $jabatan = Jabatan::create($request->all());
+        try {
+            $checkRegistrasi = RegistrasiDokter::where('id_karyawan', $request->id_karyawan)
+                ->whereDate('tanggal_awal', '<=', $request->tanggal_awal)
+                ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('deleted_at', null)
+                ->first();
+
+            if ($checkRegistrasi) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sudah terdaftar pada rentang tanggal tersebut',
+                    'data' => $checkRegistrasi
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $registrasi = RegistrasiDokter::create($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $jabatan
+                'data' => $registrasi
             ];
             return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
@@ -111,10 +129,13 @@ class JabatanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $jabatan = Jabatan::findOrFail($id);
+        $registrasi = RegistrasiDokter::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'nama_jabatan' => 'required',
+            'id_karyawan' => 'required',
+            'no_str' => 'required',
+            'tanggal_awal' => 'required',
+            'tanggal_akhir' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -128,16 +149,28 @@ class JabatanController extends Controller
         }
 
         try {
-            // Last Update User (UPDATABLE)
-            $request['lastupdate_user'] = 1;
+            $checkRegistrasi = RegistrasiDokter::where('id_karyawan', $request->id_karyawan)
+                ->whereDate('tanggal_awal', '<=', $request->tanggal_awal)
+                ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('deleted_at', null)
+                ->first();
 
-            $jabatan->update($request->all());
+            if ($checkRegistrasi) {
+                $response = [
+                    'success' => false,
+                    'message' => 'Karyawan sudah terdaftar pada rentang tanggal tersebut',
+                    'data' => $checkRegistrasi
+                ];
+                return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $registrasi->update($request->all());
             $response = [
                 'success' => true,
                 'message' => 'Berhasil',
-                'data' => $jabatan
+                'data' => $registrasi
             ];
-            return response()->json($response, Response::HTTP_CREATED);
+            return response()->json($response, Response::HTTP_OK);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,
@@ -156,63 +189,5 @@ class JabatanController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function downloadJabatan()
-    {
-        $fileName = 'jabatan.csv';
-        $jabatan = Jabatan::all();
-
-        $headers = array(
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=$fileName",
-        );
-
-        $columns = array('ID', 'Nama Jabatan');
-
-        $callback = function () use ($jabatan, $columns) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $columns);
-
-            foreach ($jabatan as $task) {
-                $row['ID']  = $task->id;
-                $row['Nama Jabatan']  = $task->nama_jabatan;
-
-                fputcsv($file, array($row['ID'], $row['Nama Jabatan']));
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
-    // Belum terpakai
-    public function detailJabatan($id_karyawan)
-    {
-        // $jabatan = DetailJabatan::join('jabatans', 'detail_jabatans.id_jabatan', '=', 'jabatans.id')
-        //     ->select('detail_jabatans.id_jabatan')
-        //     ->where('id_karyawan', $id_karyawan)
-        //     ->where('status', '1')
-        //     ->first();
-
-        $unit = Unit::join('detail_units', 'units.id', '=', 'detail_units.id_unit')
-            ->select('detail_units.id_unit')
-            ->where('id_karyawan', $id_karyawan)
-            ->where('status', '1')
-            ->first();
-
-        // $detail = [
-        //     'id_jabatan' => $jabatan->id_jabatan,
-        //     'id_unit' => $unit->id_unit
-        // ];
-
-
-        // $response = [
-        //     'success' => true,
-        //     'message' => 'Berhasil',
-        //     'data' => $detail
-        // ];
-        // return response()->json($response, Response::HTTP_OK);
     }
 }

@@ -152,6 +152,7 @@ class RegistrasiDokterController extends Controller
             $checkRegistrasi = RegistrasiDokter::where('id_karyawan', $request->id_karyawan)
                 ->whereDate('tanggal_awal', '<=', $request->tanggal_awal)
                 ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('id_str', '!=', $id)
                 ->where('deleted_at', null)
                 ->first();
 

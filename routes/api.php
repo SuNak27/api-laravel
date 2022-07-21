@@ -61,7 +61,7 @@ Route::resource('/penugasan', PenugasanController::class);
 Route::resource('/registrasi-dokter', RegistrasiDokterController::class);
 
 // Izin
-Route::resource('/izin', RegistrasiDokterController::class);
+Route::resource('/izin', IzinController::class);
 
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);

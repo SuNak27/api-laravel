@@ -60,6 +60,9 @@ Route::resource('/penugasan', PenugasanController::class);
 // Registrasi Dokter
 Route::resource('/registrasi-dokter', RegistrasiDokterController::class);
 
+// Izin
+Route::resource('/izin', RegistrasiDokterController::class);
+
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
 Route::post('/upload-jadwal', [JadwalController::class, 'uploadJadwal']);
@@ -117,9 +120,6 @@ Route::post('logout', [AuthController::class, 'logout']);
 
 // SeetingLokasi
 Route::resource('/setting_lokasi', LokasiController::class);
-
-// Izin
-Route::resource('/izin', IzinController::class);
 
 // Perdin
 Route::resource('/perdin', PerdinController::class);

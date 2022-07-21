@@ -21,8 +21,8 @@ class CreateIzinKaryawansTable extends Migration
             $table->foreign('id_karyawan')->references('id_karyawan')->on('karyawans');
             $table->date('tanggal_awal');
             $table->date('tanggal_akhir');
-            $table->integer('jumlah_menit');
-            $table->string('alasan');
+            $table->string('keterangan_izin');
+            $table->integer('jumlah_menit')->nullable();
             $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();

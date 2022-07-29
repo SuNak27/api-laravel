@@ -6,6 +6,7 @@ use App\Models\DetailJenisJadwal;
 use App\Models\JenisJadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class JenisJadwalController extends Controller
@@ -65,7 +66,23 @@ class JenisJadwalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'kode_jenis_jadwal' => 'required',
+            'nama_jenis_jadwal' => 'required',
+            'jadwal' => 'required',
+            'jadwal.*.hari' => 'required',
+            'jadwal.*.shift' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

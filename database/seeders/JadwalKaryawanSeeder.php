@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JadwalKaryawan;
 use Illuminate\Database\Seeder;
 
 class JadwalKaryawanSeeder extends Seeder
@@ -13,6 +14,10 @@ class JadwalKaryawanSeeder extends Seeder
      */
     public function run()
     {
-        //
+        JadwalKaryawan::create([
+            'id_karyawan' => 1,
+            'id_jenis_jadwal' => 1,
+            'lastupdate_user' => 1
+        ]);
     }
 }

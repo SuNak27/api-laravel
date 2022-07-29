@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailJenisJadwal;
 use App\Models\JenisJadwal;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -83,6 +84,42 @@ class JenisJadwalController extends Controller
             ];
             return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
+        try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
+            $jenis_jadwal = [
+                'kode_jenis_jadwal' => $request->kode_jenis_jadwal,
+                'nama_jenis_jadwal' => $request->nama_jenis_jadwal,
+            ];
+
+            $jenisJadwal = JenisJadwal::create($jenis_jadwal);
+
+            foreach ($request->jadwal as $j) {
+                foreach ($j['shift'] as $s) {
+                    $detail_jadwal = [
+                        'id_jenis_jadwal' => $jenisJadwal->id_jenis_jadwal,
+                        'hari' => $j['hari'],
+                        'id_shift' => $s,
+                    ];
+
+                    DetailJenisJadwal::create($detail_jadwal);
+                }
+            }
+
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -93,7 +130,35 @@ class JenisJadwalController extends Controller
      */
     public function show($id)
     {
-        //
+        $jenisJadwal = JenisJadwal::join('users', 'jenis_jadwals.lastupdate_user', 'users.id')
+            ->where('jenis_jadwals.id_jenis_jadwal', $id)
+            ->where('jenis_jadwals.deleted_at', null)->select('jenis_jadwals.id_jenis_jadwal', 'jenis_jadwals.kode_jenis_jadwal', 'jenis_jadwals.nama_jenis_jadwal', 'users.name as lastupdate_user')->first();
+
+
+        $jenisJadwal->jadwal = DetailJenisJadwal::join('jenis_jadwals', 'detail_jenis_jadwals.id_jenis_jadwal', '=', 'jenis_jadwals.id_jenis_jadwal')
+            ->join('shifts', 'detail_jenis_jadwals.id_shift', '=', 'shifts.id_shift')
+            ->select('detail_jenis_jadwals.id_detail_jenis_jadwal', 'detail_jenis_jadwals.hari')
+            ->where('detail_jenis_jadwals.id_jenis_jadwal', $jenisJadwal->id_jenis_jadwal)
+            ->orderBy(DB::raw("FIELD(detail_jenis_jadwals.hari ,'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')"))
+            ->groupBy('detail_jenis_jadwals.hari')
+            ->get();
+
+        foreach ($jenisJadwal->jadwal as $s) {
+            $s['shift'] = DetailJenisJadwal::join('jenis_jadwals', 'detail_jenis_jadwals.id_jenis_jadwal', '=', 'jenis_jadwals.id_jenis_jadwal')
+                ->join('shifts', 'shifts.id_shift', '=', 'detail_jenis_jadwals.id_shift')
+                ->select('shifts.nama_shift', 'shifts.jam_masuk', 'shifts.jam_keluar')
+                ->where('detail_jenis_jadwals.hari', $s->hari)
+                ->where('detail_jenis_jadwals.id_jenis_jadwal', $jenisJadwal->id_jenis_jadwal)
+                ->get();
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Berhasil',
+            'data' => $jenisJadwal,
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**

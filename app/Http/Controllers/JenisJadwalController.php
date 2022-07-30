@@ -27,6 +27,7 @@ class JenisJadwalController extends Controller
                 ->join('shifts', 'detail_jenis_jadwals.id_shift', '=', 'shifts.id_shift')
                 ->select('detail_jenis_jadwals.id_detail_jenis_jadwal', 'detail_jenis_jadwals.hari')
                 ->where('detail_jenis_jadwals.id_jenis_jadwal', $j->id_jenis_jadwal)
+                ->where('detail_jenis_jadwals.deleted_at', null)
                 ->orderBy(DB::raw("FIELD(detail_jenis_jadwals.hari ,'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')"))
                 ->groupBy('detail_jenis_jadwals.hari')
                 ->get();
@@ -37,6 +38,7 @@ class JenisJadwalController extends Controller
                     ->select('shifts.nama_shift', 'shifts.jam_masuk', 'shifts.jam_keluar')
                     ->where('detail_jenis_jadwals.hari', $s->hari)
                     ->where('detail_jenis_jadwals.id_jenis_jadwal', $j->id_jenis_jadwal)
+                    ->where('detail_jenis_jadwals.deleted_at', null)
                     ->get();
             }
         }
@@ -138,6 +140,7 @@ class JenisJadwalController extends Controller
         $jenisJadwal->jadwal = DetailJenisJadwal::join('jenis_jadwals', 'detail_jenis_jadwals.id_jenis_jadwal', '=', 'jenis_jadwals.id_jenis_jadwal')
             ->join('shifts', 'detail_jenis_jadwals.id_shift', '=', 'shifts.id_shift')
             ->select('detail_jenis_jadwals.id_detail_jenis_jadwal', 'detail_jenis_jadwals.hari')
+            ->where('detail_jenis_jadwals.deleted_at', null)
             ->where('detail_jenis_jadwals.id_jenis_jadwal', $jenisJadwal->id_jenis_jadwal)
             ->orderBy(DB::raw("FIELD(detail_jenis_jadwals.hari ,'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')"))
             ->groupBy('detail_jenis_jadwals.hari')
@@ -149,6 +152,7 @@ class JenisJadwalController extends Controller
                 ->select('shifts.nama_shift', 'shifts.jam_masuk', 'shifts.jam_keluar')
                 ->where('detail_jenis_jadwals.hari', $s->hari)
                 ->where('detail_jenis_jadwals.id_jenis_jadwal', $jenisJadwal->id_jenis_jadwal)
+                ->where('detail_jenis_jadwals.deleted_at', null)
                 ->get();
         }
 
@@ -181,7 +185,62 @@ class JenisJadwalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        JenisJadwal::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'kode_jenis_jadwal' => 'required',
+            'nama_jenis_jadwal' => 'required',
+            'jadwal' => 'required',
+            'jadwal.*.hari' => 'required',
+            'jadwal.*.shift' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $error = $validator->errors()->first();
+            $response = [
+                'success' => false,
+                'message' => 'Terdapat data yang salah atau kosong',
+                'error' => $error
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            // Last Update User (UPDATABLE)
+            $request['lastupdate_user'] = 1;
+
+            $jenis_jadwal = [
+                'kode_jenis_jadwal' => $request->kode_jenis_jadwal,
+                'nama_jenis_jadwal' => $request->nama_jenis_jadwal,
+            ];
+
+            JenisJadwal::where('id_jenis_jadwal', $id)->update($jenis_jadwal);
+
+            DetailJenisJadwal::where('id_jenis_jadwal', $id)->update(['deleted_at' => date('Y-m-d H:i:s')]);
+
+            foreach ($request->jadwal as $j) {
+                foreach ($j['shift'] as $s) {
+                    $detail_jadwal = [
+                        'id_jenis_jadwal' => $id,
+                        'hari' => $j['hari'],
+                        'id_shift' => $s,
+                    ];
+
+                    DetailJenisJadwal::create($detail_jadwal);
+                }
+            }
+
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**

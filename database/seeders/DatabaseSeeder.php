@@ -37,6 +37,13 @@ class DatabaseSeeder extends Seeder
         $this->call(KaryawanSeeder::class);
         $this->call(DetailJabatanSeeder::class);
         $this->call(JenisIzinSeeder::class);
+        $this->call(ShiftSeeder::class);
+        $this->call(JenisJadwalSeeder::class);
+        $this->call(DetailJenisJadwalSeeder::class);
+        $this->call(JadwalKaryawanSeeder::class);
+
+
+
 
         // SettingTahun::create([
         //     'tahun' => '2021',
@@ -79,27 +86,6 @@ class DatabaseSeeder extends Seeder
         //     'id_unit' => 1,
         //     'status' => '1',
         // ]);
-
-        Shift::create([
-            'kode_shift' => "P-001",
-            'nama_shift' => "Pagi",
-            'jam_masuk' => "08:00",
-            'jam_keluar' => "12:00",
-        ]);
-
-        Shift::create([
-            'kode_shift' => "S-001",
-            'nama_shift' => "Siang",
-            'jam_masuk' => "13:00",
-            'jam_keluar' => "17:00",
-        ]);
-
-        Shift::create([
-            'kode_shift' => "M-001",
-            'nama_shift' => "Malam",
-            'jam_masuk' => "18:00",
-            'jam_keluar' => "22:00",
-        ]);
 
         // Jadwal::create([
         //     'id_karyawan' => '1',

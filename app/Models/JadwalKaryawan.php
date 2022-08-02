@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class JadwalKaryawan extends Model
 {
     use HasFactory;
+
+    protected $guarded = ['id_jadwal_karyawan'];
+    protected $primaryKey = 'id_jadwal_karyawan';
 }

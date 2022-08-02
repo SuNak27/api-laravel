@@ -142,8 +142,12 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'jadwal.*.hari' => [
+            'required' => 'The hari field is required.',
+        ],
+
+        'jadwal.*.shift' => [
+            'required' => 'The shift field is required.',
         ],
     ],
 

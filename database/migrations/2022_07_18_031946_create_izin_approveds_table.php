@@ -19,10 +19,9 @@ class CreateIzinApprovedsTable extends Migration
             $table->foreign('id_izin_karyawan')->references('id_izin_karyawan')->on('izin_karyawans');
             $table->foreignId('id_detail_jabatan');
             $table->foreign('id_detail_jabatan')->references('id_detail_jabatan')->on('detail_jabatans');
-            $table->date('tanggal');
+            $table->date('tanggal_pengajuan')->default(now());
             $table->enum('status', ['Proses', 'Disetujui', 'Ditolak']);
-            $table->text('keterangan_izin');
-            $table->text('keterangan_acc');
+            $table->text('keterangan_acc')->nullable();
             $table->integer('lastupdate_user')->default(1);
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();

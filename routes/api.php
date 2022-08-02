@@ -7,6 +7,7 @@ use App\Http\Controllers\IzinController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\JenisIzinController;
+use App\Http\Controllers\JenisJadwalController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\LokasiController;
@@ -59,6 +60,12 @@ Route::resource('/penugasan', PenugasanController::class);
 
 // Registrasi Dokter
 Route::resource('/registrasi-dokter', RegistrasiDokterController::class);
+
+// Izin
+Route::resource('/izin', IzinController::class);
+
+// Jenis Jadwal
+Route::resource('/jenis-jadwal', JenisJadwalController::class);
 
 
 Route::post('/upload-karyawan', [KaryawanController::class, 'uploadKaryawan']);
@@ -117,9 +124,6 @@ Route::post('logout', [AuthController::class, 'logout']);
 
 // SeetingLokasi
 Route::resource('/setting_lokasi', LokasiController::class);
-
-// Izin
-Route::resource('/izin', IzinController::class);
 
 // Perdin
 Route::resource('/perdin', PerdinController::class);

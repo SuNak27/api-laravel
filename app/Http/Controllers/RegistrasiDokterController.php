@@ -152,6 +152,7 @@ class RegistrasiDokterController extends Controller
             $checkRegistrasi = RegistrasiDokter::where('id_karyawan', $request->id_karyawan)
                 ->whereDate('tanggal_awal', '<=', $request->tanggal_awal)
                 ->whereDate('tanggal_akhir', '>=', $request->tanggal_akhir)
+                ->where('id_str', '!=', $id)
                 ->where('deleted_at', null)
                 ->first();
 
@@ -170,7 +171,7 @@ class RegistrasiDokterController extends Controller
                 'message' => 'Berhasil',
                 'data' => $registrasi
             ];
-            return response()->json($response, Response::HTTP_OK);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (QueryException $e) {
             $response = [
                 'success' => false,

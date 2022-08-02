@@ -73,7 +73,10 @@ class PenugasanController extends Controller
             // Last Update User (UPDATABLE)
             $request['lastupdate_user'] = 1;
 
-            $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+            $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)
+                ->where('id_karyawan', $request->id_karyawan)
+                ->where('deleted_at', null)
+                ->first();
 
             if ($checkTanggalMulai) {
                 $response = [
@@ -192,7 +195,9 @@ class PenugasanController extends Controller
                     ->select('penugasans.*', 'penugasan_details.status', 'penugasan_details.keterangan_acc')
                     ->first();
             } else {
-                $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)->where('deleted_at', null)->first();
+                $checkTanggalMulai = Penugasan::where('tanggal_mulai', $request->tanggal_mulai)
+                    ->where('id_karyawan', $request->id_karyawan)
+                    ->where('deleted_at', null)->first();
 
                 if ($checkTanggalMulai && $request->tanggal_mulai != $penugasan->tanggal_mulai) {
                     $response = [
@@ -220,10 +225,12 @@ class PenugasanController extends Controller
                 }
 
                 if ($request->status || $request->keterangan_acc) {
-                    PenugasanDetail::where('id_penugasan', $id)->update([
-                        'status' => $request->status,
-                        'keterangan_acc' => $request->keterangan_acc,
-                    ]);
+                    PenugasanDetail::where('id_penugasan', $id)
+                        ->where('deleted_at', null)
+                        ->update([
+                            'status' => $request->status,
+                            'keterangan_acc' => $request->keterangan_acc,
+                        ]);
                 }
 
                 $penugasan->update($request->all());

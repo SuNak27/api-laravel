@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 // Karyawan
 Route::resource('/karyawan', KaryawanController::class);
+Route::put('/karyawan/upload/{id}', [KaryawanController::class, 'uploadImage']);
 
 // Jabatan
 Route::resource('/jabatan', JabatanController::class);

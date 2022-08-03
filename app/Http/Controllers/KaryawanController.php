@@ -203,7 +203,6 @@ class KaryawanController extends Controller
         }
 
         try {
-            // $oldImage = $karyawan['image'];
             $data = [
                 'nik_karyawan' => $request->nik_karyawan,
                 'nama_karyawan' => $request->nama_karyawan,
@@ -269,6 +268,44 @@ class KaryawanController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function uploadImage(Request $request, $id)
+    {
+        $karyawan = Karyawan::findOrFail($id);
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $oldImage = $karyawan['image'];
+
+            if ($request->file('image')) {
+                if ($request->image) {
+                    if ($oldImage != "") {
+                        Storage::delete('public/' . $oldImage);
+                    }
+                }
+                $data['image'] = $request->file('image')->store('karyawans', 'public');
+            }
+
+            $karyawan->update($data);
+
+
+            $response = [
+                'success' => true,
+                'message' => 'Berhasil',
+                'data' => $karyawan->findOrFail($id)
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json(['message' => "Failed " . $e->errorInfo], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     public function login(Request $request)

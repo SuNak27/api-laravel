@@ -1,94 +1,118 @@
 // Karyawan
-https://api-graha.belanj.id/public/api/karyawan --------> GET
-https://api-graha.belanj.id/public/api/karyawan --------> POST
-https://api-graha.belanj.id/public/api/karyawan/{:id} ------> GET
-https://api-graha.belanj.id/public/api/karyawan/{:id} ------> PUT
+https://api-graha.belanj.id/public/api/karyawan ===== GET
+https://api-graha.belanj.id/public/api/karyawan/{id} ===== GET
+https://api-graha.belanj.id/public/api/karyawan ===== POST
+https://api-graha.belanj.id/public/api/karyawan/{id} ===== PUT
+
 {
-	     'nama_karyawan'     	=> 'required',
-         'nik_karyawan' 		=> 'required|numeric',
-         'id_jabatan' 	        => 'required',
-         'id_unit' 	            => 'required',
-         'tanggal_lahir'        => 'required',
-         'status_kawin'         => 'required',
-         'alamat' 	            => 'required',
-         'gender' 	            => 'required',
-         'pendidikan' 	        => 'required',
-         'telepon' 	            => 'required|numeric'
+    'nik_karyawan' => 'required|numeric',
+    'nama_karyawan' => 'required',
+    'id_jabatan' => 'required',
+    'id_unit' => 'required',
+    'tanggal_lahir' => 'required',
+    'status_kawin' => 'required',
+    'alamat' => 'required',
+    'gender' => 'required',
+    'pendidikan' => 'required',
+    'telepon' => 'required|numeric',
 }
 
-// Login Karyawan
-https://api-graha.belanj.id/public/api/login/karyawan --------> POST
+// Jabatan
+https://api-graha.belanj.id/public/api/jabatan ===== GET
+https://api-graha.belanj.id/public/api/jabatan/{id} ===== GET
+https://api-graha.belanj.id/public/api/jabatan ===== POST
+https://api-graha.belanj.id/public/api/jabatan/{id} ===== PUT
 {
-	'username' 	=> 'required',  ======================== 'sabil' atau 'dani'
-	'password' 	=> 'required',  ======================== '123456'
+    'nama_jabatan' => 'required',
 }
 
-// Jadwal
-https://api-graha.belanj.id/public/api/jadwal ------------------> GET
-https://api-graha.belanj.id/public/api/jadwal/{:id_karyawan} --------> GET
-
-// Aturan Presensi
-https://api-graha.belanj.id/public/api/aturan-presensi --------> GET
-
-// Presensi
-https://api-graha.belanj.id/public/api/presensi --------> GET
-https://api-graha.belanj.id/public/api/presensi/{:id_karyawan}/tanggal/{:tanggal} --------> GET
-https://api-graha.belanj.id/public/api/presensi --------> POST
-https://api-graha.belanj.id/public/api/presensi/{:id_presensi} --------> PUT
+// Unit
+https://api-graha.belanj.id/public/api/unit ===== GET
+https://api-graha.belanj.id/public/api/unit/{id} ===== GET
+https://api-graha.belanj.id/public/api/unit ===== POST
+https://api-graha.belanj.id/public/api/unit/{id} ===== PUT
 {
-    "id_karyawan": "integer => 1, 2",
-    "id_shift": "integer => 1, 2",
-    "tanggal": "date => 2022-07-12",
-    "jam_masuk": "time => 08:00",
-    "jam_keluar": "unix timestamp => 1657580613 atau time => 12:00",
-    "latitude": " string => -6.193125",
-    "longitude": "string => 106.821810",
-    "mode_absen": "string => 0 untuk web atau 1 untuk android",
-    "keterangan": "string || null"
-},
+    'nama_unit' => 'required',
+}
 
-// Setting Lokasi
-https://api-graha.belanj.id/public/api/setting_lokasi --------> GET
-https://api-graha.belanj.id/public/api/setting_lokasi --------> POST
-https://api-graha.belanj.id/public/api/setting_lokasi/{:id_lokasi} --------> PUT
+// Shift
+https://api-graha.belanj.id/public/api/shift ===== GET
+https://api-graha.belanj.id/public/api/shift/{id} ===== GET
+https://api-graha.belanj.id/public/api/shift ===== POST
+https://api-graha.belanj.id/public/api/shift/{id} ===== PUT
 {
-    "nama_lokasi": "string => lokasi 1",
-    "latitude": "string => -6.193125",
-    "longitude": "string => 106.821810"
+    'kode_shift' => 'required',
+    'nama_shift' => 'required',
+    'jam_masuk' => 'required',
+    'jam_pulang' => 'required',
+}
+
+// Jenis Izin
+https://api-graha.belanj.id/public/api/jenis-izin ===== GET
+https://api-graha.belanj.id/public/api/jenis-izin/{id} ===== GET
+https://api-graha.belanj.id/public/api/jenis-izin ===== POST
+https://api-graha.belanj.id/public/api/jenis-izin/{id} ===== PUT
+{
+    'nama_jenis_izin' => 'required',
+}
+
+// Pangkat Golongan
+https://api-graha.belanj.id/public/api/pangkat ===== GET
+https://api-graha.belanj.id/public/api/pangkat/{id} ===== GET
+https://api-graha.belanj.id/public/api/pangkat ===== POST
+https://api-graha.belanj.id/public/api/pangkat/{id} ===== PUT
+{
+    'pangkat' => 'required',
+    'golongan' => 'required',
+}
+
+// Penugasan
+https://api-graha.belanj.id/public/api/penugasan ===== GET
+https://api-graha.belanj.id/public/api/penugasan/{id} ===== GET
+https://api-graha.belanj.id/public/api/penugasan ===== POST
+https://api-graha.belanj.id/public/api/penugasan/{id} ===== PUT
+{
+    'id_karyawan' => 'required',
+    'tujuan' => 'required',
+    'kegiatan' => 'required',
+    'tanggal_mulai' => 'required',
+    'tanggal_akhir' => 'required',
+}
+
+// Registrasi Dokter
+https://api-graha.belanj.id/public/api/registrasi-dokter ===== GET
+https://api-graha.belanj.id/public/api/registrasi-dokter/{id} ===== GET
+https://api-graha.belanj.id/public/api/registrasi-dokter ===== POST
+https://api-graha.belanj.id/public/api/registrasi-dokter/{id} ===== PUT
+{
+    'id_karyawan' => 'required',
+    'no_str' => 'required',
+    'tanggal_awal' => 'required',
+    'tanggal_akhir' => 'required',
 }
 
 // Izin
-https://api-graha.belanj.id/public/api/izin --------> GET
-https://api-graha.belanj.id/public/api/izin --------> POST
-https://api-graha.belanj.id/public/api/izin/{:id_izin} --------> PUT
+https://api-graha.belanj.id/public/api/izin ===== GET
+https://api-graha.belanj.id/public/api/izin/{id} ===== GET
+https://api-graha.belanj.id/public/api/izin ===== POST
+https://api-graha.belanj.id/public/api/izin/{id} ===== PUT
 {
-    "id_karyawan": "integer => 1, 2",
-    "status": "enum(string) => Sakit, Izin, Cuti",
-    "tanggal_mulai": "date => 2022-07-12",
-    "tanggal_selesai": "date => 2022-07-15",
-    "keterangan": "string => Lorem ipsum"
+    'id_jenis_izin' => 'required',
+    'id_karyawan' => 'required',
+    'tanggal_awal' => 'required',
+    'tanggal_akhir' => 'required',
+    'keterangan_izin' => 'required',
 }
 
-// Lembur
-https://api-graha.belanj.id/public/api/lembur --------> GET
-https://api-graha.belanj.id/public/api/lembur --------> POST
-https://api-graha.belanj.id/public/api/lembur/{:id_lembur} --------> PUT
+// Jenis Jadwal
+https://api-graha.belanj.id/public/api/jenis-jadwal ===== GET
+https://api-graha.belanj.id/public/api/jenis-jadwal/{id} ===== GET
+https://api-graha.belanj.id/public/api/jenis-jadwal ===== POST
+https://api-graha.belanj.id/public/api/jenis-jadwal/{id} ===== PUT
 {
-    "id_karyawan": integer => 1, 2,
-    "tanggal": "date => 2022-07-12",
-    "jam_mulai": "time => 13:00",
-    "jam_akhir": "time => 14:00",
-    "keterangan": "string => Test"
-}
-
-// Perdin
-https://api-graha.belanj.id/public/api/perdin --------> GET
-https://api-graha.belanj.id/public/api/perdin --------> POST
-https://api-graha.belanj.id/public/api/perdin/{:id_perdin} --------> PUT
-{
-    "id_karyawan": integer => 1, 2,
-    "tanggal_mulai": "date => 2022-07-12",
-    "tanggal_selesai": "time => 13:00",
-    "jam_akhir": "time => 14:00",
-    "keterangan": "string => Test"
+    'kode_jenis_jadwal' => 'required',
+    'nama_jenis_jadwal' => 'required',
+    'jadwal' => 'required',
+    'jadwal.*.hari' => 'required',
+    'jadwal.*.shift' => 'required',
 }

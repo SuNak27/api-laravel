@@ -10,4 +10,5 @@ class Karyawan extends Model
     use HasFactory;
 
     protected $guarded = ['id_karyawan'];
+    protected $primaryKey = 'id_karyawan';
 }
